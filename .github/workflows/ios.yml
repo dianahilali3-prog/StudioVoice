@@ -1,0 +1,73 @@
+name: iOS build & tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: macos-15
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Xcode version
+        run: xcodebuild -version
+
+      - name: Cache Supertonic models
+        uses: actions/cache@v4
+        with:
+          path: .models
+          key: supertonic-3-models-v1
+
+      - name: Download Supertonic models (for real engine tests)
+        run: ./scripts/download_models.sh "$PWD/.models"
+
+      - name: Pick an iPhone simulator (iOS 18+)
+        run: |
+          UDID=$(xcrun simctl list devices available -j | python3 -c '
+          import json, re, sys
+          devices = json.load(sys.stdin)["devices"]
+          best = None
+          for runtime, items in devices.items():
+              m = re.search(r"iOS-(\d+)-(\d+)", runtime)
+              if not m or int(m.group(1)) < 18:
+                  continue
+              version = (int(m.group(1)), int(m.group(2)))
+              for d in items:
+                  if d["name"].startswith("iPhone") and (best is None or version > best[0]):
+                      best = (version, d["udid"], d["name"])
+          print(best[1]); print(best, file=sys.stderr)
+          ')
+          echo "SIM_UDID=$UDID" >> "$GITHUB_ENV"
+
+      - name: Build for iPhone (device, unsigned)
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project DianaVoiceStudio.xcodeproj \
+            -scheme DianaVoiceStudio \
+            -destination 'generic/platform=iOS' \
+            -configuration Release \
+            CODE_SIGNING_ALLOWED=NO \
+            -quiet
+
+      - name: Unit + integration tests (simulator)
+        run: |
+          set -o pipefail
+          TEST_RUNNER_DIANA_MODELS_DIR="$PWD/.models" xcodebuild test \
+            -project DianaVoiceStudio.xcodeproj \
+            -scheme DianaVoiceStudio \
+            -destination "id=$SIM_UDID" \
+            CODE_SIGNING_ALLOWED=NO \
+            -resultBundlePath TestResults.xcresult \
+            -quiet
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: TestResults
+          path: TestResults.xcresult
+          if-no-files-found: ignore

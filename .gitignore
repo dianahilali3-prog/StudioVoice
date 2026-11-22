@@ -1,0 +1,16 @@
+# Xcode
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+.swiftpm/
+.build/
+
+# Model weights (downloaded with scripts/download_models.sh — ~400 MB)
+DianaVoiceStudio/Resources/SupertonicModels.bundle/
+.models/
+
+# macOS
+.DS_Store
