@@ -14,3 +14,7 @@ DianaVoiceStudio/Resources/SupertonicModels.bundle/
 
 # macOS
 .DS_Store
+
+# ONNX Runtime binary (fetched by scripts/setup.sh)
+Vendor/OnnxRuntime/onnxruntime.xcframework/
+Vendor/OnnxRuntime/.version

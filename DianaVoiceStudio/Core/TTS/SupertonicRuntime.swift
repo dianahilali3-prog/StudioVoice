@@ -1,7 +1,7 @@
 import Foundation
 
-#if canImport(onnxruntime_objc)
-import onnxruntime_objc
+#if os(iOS)
+import OnnxRuntimeBindings
 
 /// Thin wrapper around the four Supertonic ONNX graphs:
 /// duration predictor → text encoder → flow-matching vector estimator (N steps) → vocoder.
@@ -121,7 +121,7 @@ final class SupertonicRuntime {
 
 #else
 
-/// Stub used when ONNX Runtime is not linked (e.g. Linux unit-test builds).
+/// Stub used off iOS (e.g. Linux unit-test builds of the pure logic).
 final class SupertonicRuntime {
     let config = SupertonicConfig.fallback
 

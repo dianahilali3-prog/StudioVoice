@@ -52,8 +52,12 @@ Les trois options proposées ont été évaluées :
 
 **Supertonic 3** est le seul à couvrir les 4 combinaisons (FR/AR × femme/homme) avec un seul modèle,
 sans phonémiseur (il lit directement les caractères Unicode, donc pas d'espeak-ng à embarquer),
-en 44,1 kHz, et très rapidement sur CPU. Il tourne via **ONNX Runtime** intégré par
-Swift Package Manager (`microsoft/onnxruntime-swift-package-manager`), aucune autre dépendance.
+en 44,1 kHz, et très rapidement sur CPU. Il tourne via **ONNX Runtime 1.24.2**, aucune autre dépendance.
+
+> ℹ️ Le dépôt GitHub `microsoft/onnxruntime-swift-package-manager` a été supprimé en novembre 2026.
+> Pour que le projet reste compilable sans dépendre d'un miroir tiers, le paquet est **intégré localement**
+> (`Vendor/OnnxRuntime` : liaisons Objective-C sous licence MIT + binaire extrait du paquet NuGet
+> officiel de Microsoft par `scripts/setup.sh`).
 
 Vérifications effectuées pendant le développement :
 
@@ -83,15 +87,19 @@ l'app Fichiers ou **embarqué directement dans l'application** (voir plus bas).
    git clone https://github.com/dianahilali3-prog/StudioVoice.git
    cd StudioVoice
    ```
-2. **Ouvrir** `DianaVoiceStudio.xcodeproj` dans Xcode.
-   Xcode télécharge automatiquement le paquet Swift *onnxruntime* (première fois : 1–2 minutes).
-   En cas de souci : *File › Packages › Resolve Package Versions*.
-3. **Signature** : sélectionnez la cible *DianaVoiceStudio* › onglet *Signing & Capabilities* ›
+2. **Installer ONNX Runtime** (une seule fois, ~2 minutes) :
+   ```bash
+   ./scripts/setup.sh            # ou ./scripts/setup.sh --models pour embarquer aussi les voix
+   ```
+   Le script récupère ONNX Runtime 1.24.2 pour iOS depuis le paquet NuGet officiel de Microsoft
+   (somme de contrôle vérifiée) et le place dans `Vendor/OnnxRuntime/`.
+3. **Ouvrir** `DianaVoiceStudio.xcodeproj` dans Xcode.
+4. **Signature** : sélectionnez la cible *DianaVoiceStudio* › onglet *Signing & Capabilities* ›
    cochez *Automatically manage signing* et choisissez votre *Team* (votre identifiant Apple).
    Si l'identifiant de bundle `studio.diana.voicestudio` est déjà pris, remplacez-le par un nom unique
    (ex. `com.votrenom.dianavoicestudio`).
-4. **Brancher l'iPhone**, le choisir comme destination en haut de Xcode, puis **⌘R**.
-5. Sur l'iPhone, la première fois : *Réglages › Confidentialité et sécurité › Mode développeur* → activer,
+5. **Brancher l'iPhone**, le choisir comme destination en haut de Xcode, puis **⌘R**.
+6. Sur l'iPhone, la première fois : *Réglages › Confidentialité et sécurité › Mode développeur* → activer,
    puis *Réglages › Général › VPN et gestion de l'appareil* → faire confiance à votre profil développeur.
 
 > Avec un identifiant Apple gratuit, Apple limite la validité de l'installation à 7 jours :
@@ -167,6 +175,8 @@ DianaVoiceStudio/
   UI/                             SwiftUI : Studio, Bibliothèque, Voix, Réglages, thème rose/noir/argent
   Resources/Assets.xcassets       Icône, couleur d'accent, fond de lancement
 DianaVoiceStudioTests/            Tests unitaires et d'intégration (XCTest)
+Vendor/OnnxRuntime/               Paquet Swift local ONNX Runtime 1.24.2 (liaisons Obj-C MIT + binaire NuGet)
+scripts/setup.sh                  Installation d'ONNX Runtime (à lancer une fois avant Xcode)
 scripts/download_models.sh        Téléchargement des modèles (embarquement / tests / import)
 scripts/generate_app_icon.py      Génération de l'icône
 .github/workflows/ios.yml         CI : compilation iPhone + tests sur simulateur avec le vrai modèle
@@ -219,7 +229,7 @@ y compris l'inférence réelle, à chaque push.
 
 ## Checklist de livraison
 
-- [x] Projet Xcode complet (SwiftUI, iOS 18+, dépendance SPM résolue automatiquement).
+- [x] Projet Xcode complet (SwiftUI, iOS 18+, ONNX Runtime intégré localement via `scripts/setup.sh`).
 - [x] Palette rose / noir / argent, modes clair et sombre, mise en page pensée pour le grand écran du 17 Pro Max.
 - [x] Voix françaises féminines (5) et masculines (5).
 - [x] Voix arabes féminines (5) et masculines (5).
@@ -236,4 +246,4 @@ y compris l'inférence réelle, à chaque push.
 - Code de l'application : utilisation libre pour le propriétaire du dépôt.
 - **Supertonic 3** (modèle) : licence **OpenRAIL-M** de Supertone Inc. — usage libre, y compris commercial,
   sous réserve des restrictions d'usage de la licence (pas d'usurpation d'identité, pas de contenus trompeurs…).
-- **ONNX Runtime** : licence MIT (Microsoft).
+- **ONNX Runtime** et ses liaisons Objective-C (`Vendor/OnnxRuntime`) : licence MIT (Microsoft).

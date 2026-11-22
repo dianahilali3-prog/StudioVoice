@@ -15,6 +15,17 @@ jobs:
       - name: Xcode version
         run: xcodebuild -version
 
+      - name: Cache ONNX Runtime binary
+        uses: actions/cache@v4
+        with:
+          path: Vendor/OnnxRuntime/onnxruntime.xcframework
+          key: onnxruntime-1.24.2-nuget
+
+      - name: Setup (ONNX Runtime from Microsoft NuGet)
+        run: |
+          [ -f Vendor/OnnxRuntime/onnxruntime.xcframework/Info.plist ] && echo 1.24.2 > Vendor/OnnxRuntime/.version || true
+          ./scripts/setup.sh
+
       - name: Cache Supertonic models
         uses: actions/cache@v4
         with:

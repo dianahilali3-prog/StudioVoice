@@ -80,7 +80,7 @@ struct SettingsView: View {
                     LabeledContent("Version", value: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0")
                     LabeledContent("Moteur vocal", value: "Supertonic 3 (ONNX Runtime)")
                     Link("Licence du modèle (OpenRAIL-M)", destination: URL(string: "https://huggingface.co/Supertone/supertonic-3/blob/main/LICENSE")!)
-                    Link("ONNX Runtime (MIT)", destination: URL(string: "https://github.com/microsoft/onnxruntime")!)
+                    Link("ONNX Runtime (MIT)", destination: URL(string: "https://onnxruntime.ai")!)
                 } header: {
                     Text("À propos")
                 } footer: {
