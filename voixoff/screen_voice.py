@@ -12,14 +12,17 @@ HERE = Path(__file__).resolve().parent
 cand = json.loads((HERE / "candidates.json").read_text(encoding="utf-8"))[int(sys.argv[1])]
 out = Path(sys.argv[2]); out.mkdir(parents=True, exist_ok=True)
 TXT = {"fr": f"Bonjour, je m'appelle {cand['name']}. Je donne vie à vos vidéos avec une voix naturelle et chaleureuse.",
-       "ar": "مرحبًا بكم، يسعدني أن أقدّم محتواكم بصوتٍ طبيعيٍّ وواضح."}
+       "ar": "مرحبا بكم، يسعدني أن أقدم محتواكم بصوت طبيعي وواضح."}
 src = out / ("src" + Path(cand["url"]).suffix); urllib.request.urlretrieve(cand["url"], src)
 ref = out / "ref.wav"
 subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(src), "-t", "12", "-ac", "1", "-ar", "24000", str(ref)], check=True)
 torch.set_num_threads(4)
 model = ChatterboxMultilingualTTS.from_pretrained(device="cpu")
 whisper = WhisperModel("small", device="cpu", compute_type="int8")
-norm = lambda s: re.sub(r"[^\w\s]", "", s.lower()).split()
+def norm(s):
+    s = re.sub(r"[\u064B-\u065F\u0670\u0640]", "", s.lower())          # voyelles courtes arabes, tatweel
+    s = re.sub("[أإآ]", "ا", s).replace("ى", "ي").replace("ة", "ه")
+    return re.sub(r"[^\w\s]", "", s).split()
 res = {**cand}
 for lang in ("fr", "ar"):
     best = None
