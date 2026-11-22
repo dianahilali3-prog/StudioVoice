@@ -27,11 +27,29 @@
   "ar": true
  },
  {
+  "id": "nikos",
+  "name": "Nikos",
+  "gender": "M",
+  "origin": "el",
+  "url": "https://storage.googleapis.com/chatterbox-demo-samples/mtl_prompts/el_m.flac",
+  "fr": true,
+  "ar": true
+ },
+ {
   "id": "jade",
   "name": "Jade",
   "gender": "F",
   "origin": "en",
   "url": "https://storage.googleapis.com/chatterbox-demo-samples/turbo/gen_z_female_prompt.wav",
+  "fr": true,
+  "ar": true
+ },
+ {
+  "id": "priya",
+  "name": "Priya",
+  "gender": "F",
+  "origin": "hi",
+  "url": "https://storage.googleapis.com/chatterbox-demo-samples/mtl_prompts/hi_f1.flac",
   "fr": true,
   "ar": true
  },
@@ -90,11 +108,11 @@
   "ar": true
  },
  {
-  "id": "priya",
-  "name": "Priya",
-  "gender": "F",
-  "origin": "hi",
-  "url": "https://storage.googleapis.com/chatterbox-demo-samples/mtl_prompts/hi_f1.flac",
+  "id": "david",
+  "name": "David",
+  "gender": "M",
+  "origin": "he",
+  "url": "https://storage.googleapis.com/chatterbox-demo-samples/mtl_prompts/he_m1.flac",
   "fr": true,
   "ar": true
  },
@@ -105,7 +123,7 @@
   "origin": "ja",
   "url": "https://storage.googleapis.com/chatterbox-demo-samples/mtl_prompts/ja_f.flac",
   "fr": true,
-  "ar": false
+  "ar": true
  },
  {
   "id": "karim",
@@ -114,7 +132,7 @@
   "origin": "ar",
   "url": "https://storage.googleapis.com/chatterbox-demo-samples/mtl_prompts/ar_m1.flac",
   "fr": true,
-  "ar": false
+  "ar": true
  },
  {
   "id": "elsa",
@@ -123,7 +141,7 @@
   "origin": "sv",
   "url": "https://storage.googleapis.com/chatterbox-demo-samples/mtl_prompts/sv_f.flac",
   "fr": true,
-  "ar": false
+  "ar": true
  },
  {
   "id": "rui",
@@ -132,7 +150,7 @@
   "origin": "pt",
   "url": "https://storage.googleapis.com/chatterbox-demo-samples/mtl-v3-single-language-prompts/pt-pt/pt_pt_m1.wav",
   "fr": true,
-  "ar": false
+  "ar": true
  },
  {
   "id": "samir",
@@ -141,16 +159,7 @@
   "origin": "ar",
   "url": "https://storage.googleapis.com/chatterbox-demo-samples/mtl_prompts/ar/ar_prompts1.flac",
   "fr": true,
-  "ar": false
- },
- {
-  "id": "louis",
-  "name": "Louis",
-  "gender": "M",
-  "origin": "en",
-  "url": "https://storage.googleapis.com/chatterbox-demo-samples/turbo/ivr_male_02_prompt.wav",
-  "fr": true,
-  "ar": false
+  "ar": true
  },
  {
   "id": "ines",
@@ -159,7 +168,16 @@
   "origin": "en",
   "url": "https://storage.googleapis.com/chatterbox-demo-samples/turbo/grwm_female_prompt.wav",
   "fr": true,
-  "ar": false
+  "ar": true
+ },
+ {
+  "id": "emma",
+  "name": "Emma",
+  "gender": "F",
+  "origin": "en",
+  "url": "https://storage.googleapis.com/chatterbox-demo-samples/mtl_prompts/en_f1.flac",
+  "fr": true,
+  "ar": true
  },
  {
   "id": "mei",
@@ -171,112 +189,22 @@
   "ar": true
  },
  {
-  "id": "emma",
-  "name": "Emma",
-  "gender": "F",
-  "origin": "en",
-  "url": "https://storage.googleapis.com/chatterbox-demo-samples/mtl_prompts/en_f1.flac",
-  "fr": true,
-  "ar": false
- },
- {
-  "id": "nikos",
-  "name": "Nikos",
-  "gender": "M",
-  "origin": "el",
-  "url": "https://storage.googleapis.com/chatterbox-demo-samples/mtl_prompts/el_m.flac",
-  "fr": true,
-  "ar": false
- },
- {
   "id": "oliver",
   "name": "Oliver",
   "gender": "M",
   "origin": "en",
   "url": "https://storage.googleapis.com/chatterbox-demo-samples/prompts/male_uk_chef.flac",
   "fr": true,
-  "ar": false
- },
- {
-  "id": "aisha",
-  "name": "Aisha",
-  "gender": "F",
-  "origin": "ms",
-  "url": "https://storage.googleapis.com/chatterbox-demo-samples/mtl_prompts/ms_f.flac",
-  "fr": true,
-  "ar": false
- },
- {
-  "id": "ivan",
-  "name": "Ivan",
-  "gender": "M",
-  "origin": "ru",
-  "url": "https://storage.googleapis.com/chatterbox-demo-samples/mtl_prompts/ru_m.flac",
-  "fr": true,
-  "ar": false
- },
- {
-  "id": "grace",
-  "name": "Grace",
-  "gender": "F",
-  "origin": "en",
-  "url": "https://storage.googleapis.com/chatterbox-demo-samples/prompts/female_american.flac",
-  "fr": true,
-  "ar": false
- },
- {
-  "id": "chloe",
-  "name": "Chloé",
-  "gender": "F",
-  "origin": "en",
-  "url": "https://storage.googleapis.com/chatterbox-demo-samples/prompts/female_random_podcast.wav",
-  "fr": true,
-  "ar": false
- },
- {
-  "id": "ethan",
-  "name": "Ethan",
-  "gender": "M",
-  "origin": "en",
-  "url": "https://storage.googleapis.com/chatterbox-demo-samples/prompts/Ethan.wav",
-  "fr": true,
-  "ar": false
- },
- {
-  "id": "layla",
-  "name": "Layla",
-  "gender": "F",
-  "origin": "ar",
-  "url": "https://storage.googleapis.com/chatterbox-demo-samples/mtl_prompts/ar_f/ar_prompts2.flac",
-  "fr": true,
-  "ar": false
- },
- {
-  "id": "raven",
-  "name": "Raven",
-  "gender": "M",
-  "origin": "en",
-  "url": "https://storage.googleapis.com/chatterbox-demo-samples/turbo/dark_gaming_voice_prompt.mp3",
-  "fr": true,
-  "ar": false
- },
- {
-  "id": "carmen",
-  "name": "Carmen",
-  "gender": "F",
-  "origin": "es",
-  "url": "https://storage.googleapis.com/chatterbox-demo-samples/mtl-v3-single-language-prompts/es-es/es_es_f1.wav",
-  "fr": false,
   "ar": true
  },
  {
-  "id": "clara",
-  "name": "Clara",
-  "gender": "F",
-  "origin": "fr",
-  "url": "https://storage.googleapis.com/chatterbox-demo-samples/mtl_prompts/fr_f1.flac",
+  "id": "louis",
+  "name": "Louis",
+  "gender": "M",
+  "origin": "en",
+  "url": "https://storage.googleapis.com/chatterbox-demo-samples/turbo/ivr_male_02_prompt.wav",
   "fr": true,
-  "ar": false
+  "ar": true
  },
  {
   "id": "camille",
@@ -285,14 +213,68 @@
   "origin": "fr",
   "url": "https://storage.googleapis.com/chatterbox-demo-samples/mtl_prompts/fr/fr_prompts1.flac",
   "fr": true,
-  "ar": false
+  "ar": true
  },
  {
-  "id": "david",
-  "name": "David",
+  "id": "ivan",
+  "name": "Ivan",
   "gender": "M",
-  "origin": "he",
-  "url": "https://storage.googleapis.com/chatterbox-demo-samples/mtl_prompts/he_m1.flac",
+  "origin": "ru",
+  "url": "https://storage.googleapis.com/chatterbox-demo-samples/mtl_prompts/ru_m.flac",
+  "fr": true,
+  "ar": true
+ },
+ {
+  "id": "grace",
+  "name": "Grace",
+  "gender": "F",
+  "origin": "en",
+  "url": "https://storage.googleapis.com/chatterbox-demo-samples/prompts/female_american.flac",
+  "fr": true,
+  "ar": true
+ },
+ {
+  "id": "chloe",
+  "name": "Chloé",
+  "gender": "F",
+  "origin": "en",
+  "url": "https://storage.googleapis.com/chatterbox-demo-samples/prompts/female_random_podcast.wav",
+  "fr": true,
+  "ar": true
+ },
+ {
+  "id": "ethan",
+  "name": "Ethan",
+  "gender": "M",
+  "origin": "en",
+  "url": "https://storage.googleapis.com/chatterbox-demo-samples/prompts/Ethan.wav",
+  "fr": true,
+  "ar": true
+ },
+ {
+  "id": "layla",
+  "name": "Layla",
+  "gender": "F",
+  "origin": "ar",
+  "url": "https://storage.googleapis.com/chatterbox-demo-samples/mtl_prompts/ar_f/ar_prompts2.flac",
+  "fr": true,
+  "ar": true
+ },
+ {
+  "id": "nina",
+  "name": "Nina",
+  "gender": "F",
+  "origin": "en",
+  "url": "https://storage.googleapis.com/chatterbox-demo-samples/turbo/ivr_female_02_prompt.wav",
+  "fr": true,
+  "ar": true
+ },
+ {
+  "id": "clara",
+  "name": "Clara",
+  "gender": "F",
+  "origin": "fr",
+  "url": "https://storage.googleapis.com/chatterbox-demo-samples/mtl_prompts/fr_f1.flac",
   "fr": true,
   "ar": false
  },
@@ -306,11 +288,29 @@
   "ar": false
  },
  {
+  "id": "aisha",
+  "name": "Aisha",
+  "gender": "F",
+  "origin": "ms",
+  "url": "https://storage.googleapis.com/chatterbox-demo-samples/mtl_prompts/ms_f.flac",
+  "fr": true,
+  "ar": false
+ },
+ {
   "id": "sofia",
   "name": "Sofia",
   "gender": "F",
   "origin": "en",
   "url": "https://storage.googleapis.com/chatterbox-demo-samples/turbo/ivr_female_01_prompt.wav",
+  "fr": true,
+  "ar": false
+ },
+ {
+  "id": "raven",
+  "name": "Raven",
+  "gender": "M",
+  "origin": "en",
+  "url": "https://storage.googleapis.com/chatterbox-demo-samples/turbo/dark_gaming_voice_prompt.mp3",
   "fr": true,
   "ar": false
  },
@@ -349,6 +349,15 @@
   "url": "https://storage.googleapis.com/chatterbox-demo-samples/mtl_prompts/en/en_prompts1.flac",
   "fr": true,
   "ar": false
+ },
+ {
+  "id": "carmen",
+  "name": "Carmen",
+  "gender": "F",
+  "origin": "es",
+  "url": "https://storage.googleapis.com/chatterbox-demo-samples/mtl-v3-single-language-prompts/es-es/es_es_f1.wav",
+  "fr": false,
+  "ar": true
  },
  {
   "id": "lucia",
