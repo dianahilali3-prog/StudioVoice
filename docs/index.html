@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>DianaVoiceStudio</title>
-<meta name="description" content="Studio de voix off français et arabe aux voix naturelles.">
+<meta name="description" content="Studio de voix off français et arabe aux voix naturelles, gratuit et sans carte bancaire.">
 <meta name="theme-color" content="#0b0a0c">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="DianaVoice">
@@ -156,36 +156,17 @@ footer { color: var(--muted); font-size: 12px; text-align: center; display: grid
     <button class="chip" id="usageChip" aria-label="Quota et réglages"><svg class="icon" style="width:14px;height:14px"><use href="#i-gear"/></svg><span id="usageChipText">Réglages</span></button>
   </header>
 
-  <!-- Onboarding: connect the free Azure Speech key -->
+  <!-- Sign-in: free Puter account (email only, no card) -->
   <section class="card" id="setupCard" hidden aria-labelledby="lblSetup">
-    <div class="label" id="lblSetup">Connexion des voix naturelles</div>
-    <p style="margin:0">Les voix viennent du service <b>Azure AI Speech</b> de Microsoft : palier gratuit de <b>500 000 caractères par mois</b> (environ 9 h d'audio). À faire une seule fois :</p>
+    <div class="label" id="lblSetup">Connexion gratuite</div>
+    <p style="margin:0">Les voix naturelles (OpenAI, Google Gemini, ElevenLabs…) passent par <b>Puter</b>, un service gratuit : <b>aucune carte bancaire, aucune clé à copier</b>. Un compte gratuit (adresse e-mail) suffit et inclut un crédit offert chaque mois.</p>
     <ol class="steps">
-      <li>Crée un compte gratuit sur <a href="https://azure.microsoft.com/free/" target="_blank" rel="noopener">azure.microsoft.com/free</a>.</li>
-      <li>Ouvre <a href="https://portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices" target="_blank" rel="noopener">Créer une ressource Speech</a>. Région : <b>West Europe</b> (ou France Central). Niveau tarifaire : <b>Free F0</b>. Puis « Vérifier + créer ».</li>
-      <li>Dans la ressource, ouvre <b>Clés et point de terminaison</b> et copie la <b>Clé 1</b> et la <b>Région</b>.</li>
-      <li>Colle-les ci-dessous. La clé reste uniquement dans ce navigateur.</li>
+      <li>Touche « Se connecter » : une fenêtre Puter s'ouvre.</li>
+      <li>Crée ton compte gratuit (ou connecte-toi) et accepte.</li>
+      <li>C'est tout : tu reviens directement au studio.</li>
     </ol>
-    <div class="grid2">
-      <label class="field"><span>Clé Azure Speech</span><input type="password" id="keyInput" autocomplete="off" spellcheck="false" placeholder="ex. 3f2a…"></label>
-      <label class="field"><span>Région</span>
-        <select id="regionInput">
-          <option value="westeurope">West Europe (Pays-Bas)</option>
-          <option value="francecentral">France Central (Paris)</option>
-          <option value="northeurope">North Europe (Irlande)</option>
-          <option value="switzerlandnorth">Switzerland North</option>
-          <option value="uksouth">UK South</option>
-          <option value="germanywestcentral">Germany West Central</option>
-          <option value="uaenorth">UAE North (Dubaï)</option>
-          <option value="eastus">East US</option>
-          <option value="westus2">West US 2</option>
-          <option value="canadacentral">Canada Central</option>
-          <option value="southeastasia">Southeast Asia</option>
-          <option value="centralindia">Central India</option>
-        </select>
-      </label>
-    </div>
-    <button class="btn btn-primary" id="connectBtn">Connecter les voix</button>
+    <button class="btn btn-primary" id="connectBtn">Se connecter gratuitement</button>
+    <div class="hint">Si rien ne s'ouvre, autorise les fenêtres pop-up pour ce site puis réessaie.</div>
     <div class="error" id="setupError" hidden></div>
   </section>
 
@@ -204,22 +185,21 @@ footer { color: var(--muted); font-size: 12px; text-align: center; display: grid
       <button class="btn btn-dark" id="togglePicker" aria-expanded="false"><svg class="icon"><use href="#i-people"/></svg>Choisir une voix</button>
       <div id="picker" hidden style="display:grid;gap:12px">
         <div class="row">
-          <div class="seg" role="group" aria-label="Langue" id="langSeg">
-            <button data-v="fr" aria-pressed="true">🇫🇷 Français</button>
-            <button data-v="ar" aria-pressed="false">🇸🇦 Arabe</button>
-            <button data-v="" aria-pressed="false">Toutes</button>
-          </div>
           <div class="seg" role="group" aria-label="Genre" id="genderSeg">
             <button data-v="" aria-pressed="true">Toutes</button>
-            <button data-v="Female" aria-pressed="false">Femmes</button>
-            <button data-v="Male" aria-pressed="false">Hommes</button>
+            <button data-v="F" aria-pressed="false">Femmes</button>
+            <button data-v="M" aria-pressed="false">Hommes</button>
+          </div>
+          <div class="seg" role="group" aria-label="Moteur" id="engineSeg">
+            <button data-v="" aria-pressed="true">Tous</button>
+            <button data-v="openai" aria-pressed="false">OpenAI</button>
+            <button data-v="gemini" aria-pressed="false">Gemini</button>
+            <button data-v="elevenlabs" aria-pressed="false">ElevenLabs</button>
+            <button data-v="other" aria-pressed="false">Autres</button>
           </div>
         </div>
-        <div class="grid2">
-          <label class="field"><span class="sr">Région / accent</span><select id="localeFilter"></select></label>
-          <label class="field"><span class="sr">Rechercher</span><input type="search" id="voiceSearch" placeholder="Rechercher un prénom…"></label>
-        </div>
-        <label class="toggle"><input type="checkbox" id="recoOnly" checked><span><b>Recommandées pour la narration</b> <span class="hint">· décoche pour voir toutes les voix</span></span></label>
+        <label class="field"><span class="sr">Rechercher</span><input type="search" id="voiceSearch" placeholder="Rechercher une voix (prénom, style…)"></label>
+        <div class="hint">Toutes ces voix lisent le français et l'arabe (sauf mention « FR » ou « AR »). Touche ▶︎ pour écouter un extrait.</div>
         <div class="voices" id="voiceGrid"></div>
       </div>
     </section>
@@ -240,7 +220,31 @@ footer { color: var(--muted); font-size: 12px; text-align: center; display: grid
 
     <section class="card" aria-labelledby="lblPros">
       <div class="label" id="lblPros">Interprétation</div>
-      <label class="field" id="styleField" hidden><span>Style de lecture</span><select id="styleSel"></select></label>
+      <div class="grid2">
+        <label class="field"><span>Style</span>
+          <select id="styleSel">
+            <option value="narration">Narration (documentaire, voix off)</option>
+            <option value="conversation">Conversation naturelle</option>
+            <option value="story">Storytelling chaleureux</option>
+            <option value="ad">Publicité dynamique</option>
+            <option value="news">Journal, information</option>
+            <option value="calm">Calme et apaisant</option>
+            <option value="energy">Motivation, énergique</option>
+            <option value="custom">Personnalisé…</option>
+          </select></label>
+        <label class="field"><span>Accent</span>
+          <select id="accentSel">
+            <option value="fr-FR">Français de France</option>
+            <option value="fr-CA">Français québécois</option>
+            <option value="fr-BE">Français de Belgique</option>
+            <option value="ar-MSA">Arabe standard (fusha)</option>
+            <option value="ar-MA">Arabe marocain (darija)</option>
+            <option value="ar-EG">Arabe égyptien</option>
+            <option value="ar-LEV">Arabe levantin</option>
+            <option value="ar-GULF">Arabe du Golfe</option>
+          </select></label>
+      </div>
+      <label class="field" id="customField" hidden><span>Consigne de lecture</span><textarea id="customStyle" style="min-height:80px" placeholder="ex. Voix de narratrice posée, sourire dans la voix, articulation très nette."></textarea></label>
       <div class="slider">
         <div class="head"><label for="speed">Vitesse</label><span class="val" id="speedVal">1.00×</span></div>
         <input type="range" id="speed" min="0.5" max="2" step="0.05" value="1">
@@ -254,13 +258,11 @@ footer { color: var(--muted); font-size: 12px; text-align: center; display: grid
       <details>
         <summary>Réglages avancés</summary>
         <div class="adv">
-          <label class="field"><span>Pause entre les phrases</span>
-            <select id="sentPause"><option value="">Naturelle</option><option value="150">Courte (0,15 s)</option><option value="350">Moyenne (0,35 s)</option><option value="700">Longue (0,7 s)</option></select></label>
           <div class="slider">
             <div class="head"><label for="pPara">Pause entre paragraphes</label><span class="val" id="pParaVal">0.7 s</span></div>
             <input type="range" id="pPara" min="0" max="3" step="0.1" value="0.7">
           </div>
-          <label class="toggle"><input type="checkbox" id="autoLang" checked><span><b>Bilingue automatique FR / AR</b><br><span class="hint">Les passages dans l'autre langue sont lus par la voix associée ci-dessous (ou par la même voix si elle est multilingue).</span></span></label>
+          <label class="toggle"><input type="checkbox" id="autoLang" checked><span><b>Bilingue automatique FR / AR</b><br><span class="hint">Chaque passage est lu dans sa langue. Pour les voix d'une seule langue (FR ou AR), la voix associée ci-dessous prend le relais.</span></span></label>
           <div class="grid2">
             <label class="field"><span>Voix associée pour l'arabe</span><select id="compAr"></select></label>
             <label class="field"><span>Voix associée pour le français</span><select id="compFr"></select></label>
@@ -306,32 +308,30 @@ footer { color: var(--muted); font-size: 12px; text-align: center; display: grid
   </div>
 
   <section class="card" id="settingsCard" hidden aria-labelledby="lblSettings">
-    <div class="label" id="lblSettings"><span>Quota et réglages</span><button class="btn btn-ghost" id="closeSettings">Fermer</button></div>
+    <div class="label" id="lblSettings"><span>Quota et compte</span><button class="btn btn-ghost" id="closeSettings">Fermer</button></div>
     <div class="meter">
       <div class="txt"><span>Aujourd'hui</span><span id="mDay"></span></div>
       <div class="bar"><i id="mDayBar"></i></div>
     </div>
-    <div class="meter">
-      <div class="txt"><span>Ce mois-ci (palier gratuit)</span><span id="mMonth"></span></div>
-      <div class="bar"><i id="mMonthBar"></i></div>
+    <div class="meter" id="creditMeter" hidden>
+      <div class="txt"><span>Crédit gratuit Puter du mois</span><span id="mCredit"></span></div>
+      <div class="bar"><i id="mCreditBar"></i></div>
     </div>
-    <div class="grid2">
-      <label class="field"><span>Quota par jour (caractères)</span><input type="number" id="dailyLimit" min="1000" step="1000" inputmode="numeric"></label>
-      <label class="field"><span>Quota par mois (caractères)</span><input type="number" id="monthlyLimit" min="1000" step="10000" inputmode="numeric"></label>
-    </div>
-    <div class="hint">Le palier gratuit Azure (F0) offre 500 000 caractères par mois. Le quota quotidien répartit ce volume (≈ 16 000 caractères ≈ 18 min d'audio par jour). Les extraits d'écoute sont mis en cache et ne sont comptés qu'une fois.</div>
+    <label class="field"><span>Quota par jour (caractères)</span><input type="number" id="dailyLimit" min="500" step="500" inputmode="numeric"></label>
+    <div class="hint">Le quota quotidien répartit ton crédit gratuit sur le mois. Les voix OpenAI et Gemini consomment peu ; les voix ElevenLabs consomment davantage. Les extraits d'écoute sont mis en cache et ne sont comptés qu'une fois.</div>
     <div class="row">
-      <button class="btn btn-ghost" id="changeKey">Changer de clé Azure</button>
-      <button class="btn btn-ghost" id="forgetKey" style="color:var(--danger)">Supprimer la clé de ce navigateur</button>
+      <span class="hint" id="accountName"></span>
+      <button class="btn btn-ghost" id="signOut" style="color:var(--danger)">Se déconnecter</button>
     </div>
   </section>
 
   <footer>
-    <span>Voix neuronales Microsoft Azure AI Speech · ton script est envoyé uniquement à Azure, avec ta propre clé.</span>
-    <span>DianaVoiceStudio · gratuit, sans abonnement.</span>
+    <span>Voix : OpenAI, Google Gemini, ElevenLabs, xAI et Amazon Polly, via ton compte Puter gratuit. Ton script est envoyé au service de la voix choisie pour être lu.</span>
+    <span>DianaVoiceStudio · gratuit, sans abonnement, sans carte bancaire.</span>
   </footer>
 </div>
 
+<script src="https://js.puter.com/v2/"></script>
 <script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/mp4-muxer@5.1.3/build/mp4-muxer.js"></script>
 <script>
@@ -343,109 +343,160 @@ const store = {
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch { return false; } },
   del(k) { try { localStorage.removeItem(k); } catch { /* ignore */ } }
 };
-const params = new URLSearchParams(location.search);
-// Test hook: ?endpoint=http://127.0.0.1:8766 points the app at a mock Azure server.
-const ENDPOINT_OVERRIDE = params.get("endpoint");
 const nextFrame = () => new Promise(r => setTimeout(r, 0));
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" }[c]));
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fmtN = n => Number(n).toLocaleString("fr-FR");
+// Test hook: ?mock=1 replaces Puter by a local fake (used for automated tests only).
+const MOCK = new URLSearchParams(location.search).get("mock") === "1";
+const P = () => MOCK ? window.__mockPuter : window.puter;
 
-// ---------------------------------------------------------------- Azure account
-let cfg = store.get("dvs.azure", null); // { key, region }
-const base = () => ENDPOINT_OVERRIDE || `https://${cfg.region}.tts.speech.microsoft.com`;
-
-// ---------------------------------------------------------------- Voice catalog (live list from Azure)
-const LOCALES = {
-  "fr-FR": "France", "fr-CA": "Canada", "fr-BE": "Belgique", "fr-CH": "Suisse",
-  "ar-SA": "Arabie saoudite", "ar-EG": "Égypte", "ar-MA": "Maroc", "ar-DZ": "Algérie", "ar-TN": "Tunisie", "ar-AE": "Émirats",
-  "ar-LB": "Liban", "ar-JO": "Jordanie", "ar-KW": "Koweït", "ar-QA": "Qatar", "ar-BH": "Bahreïn", "ar-OM": "Oman",
-  "ar-YE": "Yémen", "ar-SY": "Syrie", "ar-IQ": "Irak", "ar-LY": "Libye"
-};
-const FLAGS = { FR: "🇫🇷", CA: "🇨🇦", BE: "🇧🇪", CH: "🇨🇭", SA: "🇸🇦", EG: "🇪🇬", MA: "🇲🇦", DZ: "🇩🇿", TN: "🇹🇳", AE: "🇦🇪", LB: "🇱🇧", JO: "🇯🇴", KW: "🇰🇼", QA: "🇶🇦", BH: "🇧🇭", OM: "🇴🇲", YE: "🇾🇪", SY: "🇸🇾", IQ: "🇮🇶", LY: "🇱🇾", US: "🇺🇸", GB: "🇬🇧", AU: "🇦🇺", IN: "🇮🇳", DE: "🇩🇪", ES: "🇪🇸", IT: "🇮🇹", CN: "🇨🇳", JP: "🇯🇵", KR: "🇰🇷", BR: "🇧🇷" };
-// Voices that read long-form French/Arabic content most naturally (shown first).
-const RECOMMENDED = [
-  "fr-FR-VivienneMultilingualNeural", "fr-FR-RemyMultilingualNeural", "fr-FR-DeniseNeural", "fr-FR-HenriNeural", "fr-FR-EloiseNeural",
-  "fr-FR-LucienMultilingualNeural", "fr-FR-JosephineNeural", "fr-FR-AlainNeural", "fr-FR-BrigitteNeural", "fr-FR-CelesteNeural", "fr-FR-ClaudeNeural",
-  "fr-FR-CoralieNeural", "fr-FR-JeromeNeural", "fr-FR-MauriceNeural", "fr-FR-YvesNeural", "fr-FR-YvetteNeural",
-  "fr-CA-SylvieNeural", "fr-CA-ThierryNeural", "fr-CA-JeanNeural", "fr-CA-AntoineNeural", "fr-BE-CharlineNeural", "fr-BE-GerardNeural", "fr-CH-ArianeNeural", "fr-CH-FabriceNeural",
-  "en-US-AvaMultilingualNeural", "en-US-AndrewMultilingualNeural", "en-US-EmmaMultilingualNeural", "en-US-BrianMultilingualNeural",
-  "ar-SA-ZariyahNeural", "ar-SA-HamedNeural", "ar-EG-SalmaNeural", "ar-EG-ShakirNeural", "ar-AE-FatimaNeural", "ar-AE-HamdanNeural",
-  "ar-MA-MounaNeural", "ar-MA-JamalNeural", "ar-DZ-AminaNeural", "ar-DZ-IsmaelNeural", "ar-TN-ReemNeural", "ar-TN-HediNeural",
-  "ar-LB-LaylaNeural", "ar-LB-RamiNeural", "ar-JO-SanaNeural", "ar-JO-TaimNeural", "ar-QA-AmalNeural", "ar-QA-MoazNeural"
+// ---------------------------------------------------------------- Voice catalogue
+// lang: "multi" = reads French and Arabic; "fr" / "ar" = single language.
+const ENGINES = { openai: "OpenAI", gemini: "Google Gemini", elevenlabs: "ElevenLabs", xai: "xAI Grok", "aws-polly": "Amazon Polly" };
+const V = (provider, voice, name, gender, desc, extra = {}) => ({ id: `${provider}:${voice}`, provider, voice, name, gender, desc, lang: "multi", ...extra });
+const VOICES = [
+  // OpenAI gpt-4o-mini-tts: most natural for narration, follows reading instructions
+  V("openai", "marin", "Marin", "F", "Chaleureuse, très naturelle", { reco: true }),
+  V("openai", "cedar", "Cedar", "M", "Posée, profonde", { reco: true }),
+  V("openai", "coral", "Coral", "F", "Souriante, expressive", { reco: true }),
+  V("openai", "sage", "Sage", "F", "Douce, rassurante"),
+  V("openai", "shimmer", "Shimmer", "F", "Claire, lumineuse"),
+  V("openai", "nova", "Nova", "F", "Jeune, dynamique"),
+  V("openai", "ballad", "Ballad", "M", "Conteur expressif", { reco: true }),
+  V("openai", "verse", "Verse", "M", "Vivant, rythmé"),
+  V("openai", "ash", "Ash", "M", "Assuré, moderne"),
+  V("openai", "echo", "Echo", "M", "Neutre, posé"),
+  V("openai", "onyx", "Onyx", "M", "Grave, autoritaire"),
+  V("openai", "fable", "Fable", "M", "Narrateur, théâtral"),
+  V("openai", "alloy", "Alloy", "F", "Équilibrée, neutre"),
+  // Google Gemini TTS: 30 voices, very expressive, follows reading instructions
+  V("gemini", "Sulafat", "Sulafat", "F", "Chaleureuse", { reco: true }),
+  V("gemini", "Kore", "Kore", "F", "Ferme, assurée", { reco: true }),
+  V("gemini", "Aoede", "Aoede", "F", "Légère, aérée"),
+  V("gemini", "Leda", "Leda", "F", "Jeune"),
+  V("gemini", "Zephyr", "Zephyr", "F", "Lumineuse"),
+  V("gemini", "Callirrhoe", "Callirrhoe", "F", "Détendue"),
+  V("gemini", "Autonoe", "Autonoe", "F", "Claire"),
+  V("gemini", "Despina", "Despina", "F", "Douce, veloutée"),
+  V("gemini", "Erinome", "Erinome", "F", "Nette"),
+  V("gemini", "Laomedeia", "Laomedeia", "F", "Enjouée"),
+  V("gemini", "Achernar", "Achernar", "F", "Tendre"),
+  V("gemini", "Gacrux", "Gacrux", "F", "Mature"),
+  V("gemini", "Pulcherrima", "Pulcherrima", "F", "Affirmée"),
+  V("gemini", "Vindemiatrix", "Vindemiatrix", "F", "Délicate"),
+  V("gemini", "Charon", "Charon", "M", "Informatif, documentaire", { reco: true }),
+  V("gemini", "Sadaltager", "Sadaltager", "M", "Savant, posé", { reco: true }),
+  V("gemini", "Puck", "Puck", "M", "Enjoué"),
+  V("gemini", "Fenrir", "Fenrir", "M", "Vif, passionné"),
+  V("gemini", "Orus", "Orus", "M", "Ferme"),
+  V("gemini", "Enceladus", "Enceladus", "M", "Soufflé, intime"),
+  V("gemini", "Iapetus", "Iapetus", "M", "Clair"),
+  V("gemini", "Umbriel", "Umbriel", "M", "Décontracté"),
+  V("gemini", "Algieba", "Algieba", "M", "Velouté"),
+  V("gemini", "Algenib", "Algenib", "M", "Rocailleux"),
+  V("gemini", "Rasalgethi", "Rasalgethi", "M", "Informatif"),
+  V("gemini", "Alnilam", "Alnilam", "M", "Ferme"),
+  V("gemini", "Schedar", "Schedar", "M", "Égal, régulier"),
+  V("gemini", "Achird", "Achird", "M", "Amical"),
+  V("gemini", "Zubenelgenubi", "Zubenelgenubi", "M", "Décontracté"),
+  V("gemini", "Sadachbia", "Sadachbia", "M", "Vivant"),
+  // ElevenLabs (eleven_multilingual_v2): premium, consumes more credit
+  V("elevenlabs", "EXAVITQu4vr4xnSDxMaL", "Sarah", "F", "Douce, professionnelle", { reco: true, premium: true }),
+  V("elevenlabs", "XB0fDUnXU5powFXDhCwa", "Charlotte", "F", "Séduisante, posée", { premium: true }),
+  V("elevenlabs", "FGY2WhTYpPnrIDTdsKH5", "Laura", "F", "Enjouée", { premium: true }),
+  V("elevenlabs", "Xb7hH8MSUJpSbSDYk0k2", "Alice", "F", "Claire, assurée", { premium: true }),
+  V("elevenlabs", "XrExE9yKIg1WjnnlVkGX", "Matilda", "F", "Chaleureuse", { premium: true }),
+  V("elevenlabs", "pFZP5JQG7iQjIQuC4Bku", "Lily", "F", "Veloutée", { premium: true }),
+  V("elevenlabs", "cgSgspJ2msm6clMCkdW9", "Jessica", "F", "Expressive, jeune", { premium: true }),
+  V("elevenlabs", "JBFqnCBsd6RMkjVDRZzb", "George", "M", "Conteur chaleureux", { reco: true, premium: true }),
+  V("elevenlabs", "onwK4e9ZLuTAKqWW03F9", "Daniel", "M", "Présentateur, autoritaire", { premium: true }),
+  V("elevenlabs", "nPczCjzI2devNBz1zQrb", "Brian", "M", "Profond, narratif", { premium: true }),
+  V("elevenlabs", "TX3LPaxmHKxFdv7VOQHJ", "Liam", "M", "Jeune, articulé", { premium: true }),
+  V("elevenlabs", "N2lVS1w4EtoT3dr4eOWO", "Callum", "M", "Intense", { premium: true }),
+  V("elevenlabs", "cjVigY5qzO86Huf0OWal", "Eric", "M", "Doux, fiable", { premium: true }),
+  V("elevenlabs", "iP95p4xoKVk53GoZ742B", "Chris", "M", "Naturel, décontracté", { premium: true }),
+  // xAI Grok voices
+  V("xai", "eve", "Eve", "F", "Énergique"),
+  V("xai", "ara", "Ara", "F", "Chaleureuse"),
+  V("xai", "rex", "Rex", "M", "Assuré"),
+  V("xai", "leo", "Leo", "M", "Posé"),
+  V("xai", "sal", "Sal", "M", "Neutre"),
+  // Amazon Polly (single-language voices)
+  V("aws-polly", "Lea", "Léa", "F", "Française, naturelle", { lang: "fr", engine: "generative", language: "fr-FR" }),
+  V("aws-polly", "Remi", "Rémi", "M", "Français, naturel", { lang: "fr", engine: "generative", language: "fr-FR" }),
+  V("aws-polly", "Gabrielle", "Gabrielle", "F", "Québécoise", { lang: "fr", engine: "neural", language: "fr-CA" }),
+  V("aws-polly", "Liam", "Liam", "M", "Québécois", { lang: "fr", engine: "neural", language: "fr-CA" }),
+  V("aws-polly", "Hala", "Hala", "F", "Arabe du Golfe", { lang: "ar", engine: "neural", language: "ar-AE" }),
+  V("aws-polly", "Zayd", "Zayd", "M", "Arabe du Golfe", { lang: "ar", engine: "neural", language: "ar-AE" })
 ];
-const STYLE_FR = {
-  "narration-professional": "Narration professionnelle", "narration-relaxed": "Narration détendue", "documentary-narration": "Documentaire",
-  newscast: "Journal", "newscast-casual": "Info décontractée", "newscast-formal": "Info formelle", chat: "Conversation", "chat-casual": "Conversation décontractée",
-  cheerful: "Joyeux", excited: "Enthousiaste", friendly: "Amical", hopeful: "Plein d'espoir", calm: "Calme", gentle: "Doux", empathetic: "Empathique",
-  sad: "Triste", angry: "En colère", fearful: "Inquiet", terrified: "Terrifié", disgruntled: "Mécontent", serious: "Sérieux", whispering: "Chuchoté",
-  shouting: "Crié", unfriendly: "Froid", embarrassed: "Gêné", affectionate: "Affectueux", lyrical: "Lyrique", poetry: "Poésie", "poetry-reading": "Lecture de poésie",
-  "customerservice": "Service client", assistant: "Assistant", advertisement_upbeat: "Publicité dynamique", sports_commentary: "Commentaire sportif",
-  sports_commentary_excited: "Commentaire sportif enthousiaste", story: "Histoire", depressed: "Abattu", envious: "Envieux", livecommercial: "Vente en direct"
+const voiceById = id => VOICES.find(v => v.id === id);
+const DEFAULT_VOICE = "openai:marin";
+const MAX_REQ = 1200; // characters per request: small parallel requests finish fastest
+
+// ---------------------------------------------------------------- Reading instructions (OpenAI / Gemini)
+const STYLES = {
+  narration: "Voix off de narration professionnelle pour une vidéo : ton posé et naturel, articulation très nette, rythme régulier, légère chaleur dans la voix.",
+  conversation: "Ton de conversation naturelle et spontanée, comme si tu parlais à une amie, avec des intonations vivantes et un rythme fluide.",
+  story: "Conte une histoire avec chaleur et émotion, en variant les intonations, avec de petites respirations naturelles.",
+  ad: "Voix publicitaire dynamique et souriante, énergie positive, rythme enlevé mais toujours très clair.",
+  news: "Présentation de journal d'information : ton neutre, crédible et précis, diction impeccable.",
+  calm: "Voix calme, douce et apaisante, rythme lent, comme pour une méditation guidée.",
+  energy: "Voix motivante et énergique, pleine d'enthousiasme, qui donne envie d'agir."
 };
-let VOICES = [];
-function primaryLang(v) { return v.Locale.slice(0, 2); }
-function speaks(v, lang) {
-  if (primaryLang(v) === lang) return true;
-  return (v.SecondaryLocaleList || []).some(l => l.startsWith(lang + "-"));
-}
-const isMulti = v => /Multilingual/i.test(v.ShortName);
-function voiceLabel(v) {
-  const lang = primaryLang(v) === "ar" ? "Arabe" : primaryLang(v) === "fr" ? "Français" : "Multilingue";
-  return `${lang} – ${v.Gender === "Male" ? "Homme" : "Femme"}`;
-}
-function regionLabel(v) { return LOCALES[v.Locale] || v.LocaleName || v.Locale; }
-function flagOf(v) { return FLAGS[v.Locale.split("-")[1]] || "🌐"; }
-function shortName(v) { return (v.DisplayName || v.LocalName || v.ShortName).replace(/ Multilingual/, ""); }
-async function loadVoices(force = false) {
-  const cached = store.get("dvs.voices", null);
-  if (cached && !force && cached.region === cfg.region && Date.now() - cached.at < 7 * 864e5) { VOICES = cached.list; return VOICES; }
-  const r = await fetch(base() + "/cognitiveservices/voices/list", { headers: { "Ocp-Apim-Subscription-Key": cfg.key } });
-  if (r.status === 401 || r.status === 403) throw new Error("Clé ou région invalide. Vérifie la Clé 1 et la région de ta ressource Speech.");
-  if (!r.ok) throw new Error(`Azure a répondu ${r.status}. Réessaie dans un instant.`);
-  const all = await r.json();
-  VOICES = all.filter(v => !v.ShortName.includes(":") && (v.VoiceType || "Neural") === "Neural" && (speaks(v, "fr") || speaks(v, "ar")) &&
-    (primaryLang(v) === "fr" || primaryLang(v) === "ar" || isMulti(v)))
-    .map(v => ({ ShortName: v.ShortName, DisplayName: v.DisplayName, LocalName: v.LocalName, Gender: v.Gender, Locale: v.Locale, LocaleName: v.LocaleName,
-      StyleList: v.StyleList || [], SecondaryLocaleList: v.SecondaryLocaleList || [] }));
-  VOICES.sort((a, b) => {
-    const ra = RECOMMENDED.indexOf(a.ShortName), rb = RECOMMENDED.indexOf(b.ShortName);
-    return (ra < 0 ? 999 : ra) - (rb < 0 ? 999 : rb) || a.Locale.localeCompare(b.Locale) || shortName(a).localeCompare(shortName(b));
-  });
-  store.set("dvs.voices", { region: cfg.region, at: Date.now(), list: VOICES });
-  return VOICES;
-}
-const voiceByName = n => VOICES.find(v => v.ShortName === n);
-function defaultVoice(lang, gender) {
-  return VOICES.find(v => primaryLang(v) === lang && v.Gender === gender && RECOMMENDED.includes(v.ShortName))
-    || VOICES.find(v => primaryLang(v) === lang && v.Gender === gender) || VOICES.find(v => primaryLang(v) === lang) || VOICES[0];
+const ACCENTS = {
+  "fr-FR": "Lis en français avec un accent standard de France.",
+  "fr-CA": "Lis en français avec un accent québécois naturel.",
+  "fr-BE": "Lis en français avec un léger accent belge.",
+  "ar-MSA": "اقرأ بالعربية الفصحى بنطق واضح وسليم.",
+  "ar-MA": "اقرأ بالدارجة المغربية بنطق طبيعي.",
+  "ar-EG": "اقرأ باللهجة المصرية بنطق طبيعي.",
+  "ar-LEV": "اقرأ باللهجة الشامية بنطق طبيعي.",
+  "ar-GULF": "اقرأ باللهجة الخليجية بنطق طبيعي."
+};
+function instructionsFor(langs, s) {
+  langs = [].concat(langs);
+  const style = s.style === "custom" ? (s.customStyle || STYLES.narration) : (STYLES[s.style] || STYLES.narration);
+  const fr = s.accent && s.accent.startsWith("fr") ? ACCENTS[s.accent] : ACCENTS["fr-FR"];
+  const ar = s.accent && s.accent.startsWith("ar") ? ACCENTS[s.accent] : ACCENTS["ar-MSA"];
+  const accent = langs.includes("fr") && langs.includes("ar") ? `${fr} Les passages en arabe : ${ar}` : langs.includes("ar") ? ar : fr;
+  return `${accent} ${style} Prononce chaque mot correctement, sans rien ajouter ni omettre.`;
 }
 
-// ---------------------------------------------------------------- Quotas (per browser + key)
-const DEFAULT_LIMITS = { day: 16000, month: 500000 };
-let limits = store.get("dvs.limits", DEFAULT_LIMITS);
+// ---------------------------------------------------------------- Quotas
+let limits = store.get("dvs.limits3", { day: 10000 });
 function usage() {
-  const now = new Date(), day = now.toISOString().slice(0, 10), month = day.slice(0, 7);
-  const u = store.get("dvs.usage", { day, month, dayChars: 0, monthChars: 0 });
-  if (u.month !== month) { u.month = month; u.monthChars = 0; }
-  if (u.day !== day) { u.day = day; u.dayChars = 0; }
+  const day = new Date().toISOString().slice(0, 10);
+  const u = store.get("dvs.usage3", { day, chars: 0 });
+  if (u.day !== day) { u.day = day; u.chars = 0; }
   return u;
 }
-function addUsage(n) { const u = usage(); u.dayChars += n; u.monthChars += n; store.set("dvs.usage", u); renderUsage(); }
+function addUsage(n) { const u = usage(); u.chars += n; store.set("dvs.usage3", u); renderUsage(); }
 function checkQuota(n) {
   const u = usage();
-  if (u.dayChars + n > limits.day) return `Quota du jour atteint : ${fmtN(u.dayChars)} / ${fmtN(limits.day)} caractères utilisés, ce script en demande ${fmtN(n)}. Reviens demain ou augmente le quota quotidien dans les réglages (icône ⚙︎).`;
-  if (u.monthChars + n > limits.month) return `Quota du mois atteint : ${fmtN(u.monthChars)} / ${fmtN(limits.month)} caractères. Le palier gratuit Azure se renouvelle le mois prochain.`;
+  if (u.chars + n > limits.day) return `Quota du jour atteint : ${fmtN(u.chars)} / ${fmtN(limits.day)} caractères utilisés, ce script en demande ${fmtN(n)}. Reviens demain, raccourcis le script, ou augmente le quota quotidien (icône ⚙︎ en haut).`;
   return null;
 }
-const fmtN = n => Number(n).toLocaleString("fr-FR");
+async function refreshCredit() {
+  try {
+    const u = await P().auth.getMonthlyUsage();
+    const a = u && (u.allowanceInfo || u.allowance_info || u);
+    const total = a && (a.monthUsageAllowance ?? a.month_usage_allowance ?? a.allowance);
+    const left = a && (a.remaining ?? a.remainingAllowance ?? a.remaining_allowance);
+    if (typeof total === "number" && typeof left === "number" && total > 0) {
+      $("creditMeter").hidden = false;
+      const pct = Math.max(0, Math.min(100, left / total * 100));
+      $("mCredit").textContent = `${Math.round(pct)} % restant`;
+      $("mCreditBar").style.width = (100 - pct) + "%";
+    }
+  } catch { /* optional */ }
+}
 function renderUsage() {
   const u = usage();
-  $("usageChipText").textContent = cfg ? `Aujourd'hui ${fmtN(u.dayChars)} / ${fmtN(limits.day)}` : "Réglages";
-  $("mDay").textContent = `${fmtN(u.dayChars)} / ${fmtN(limits.day)} caractères`;
-  $("mMonth").textContent = `${fmtN(u.monthChars)} / ${fmtN(limits.month)} caractères`;
-  $("mDayBar").style.width = Math.min(100, u.dayChars / limits.day * 100) + "%";
-  $("mMonthBar").style.width = Math.min(100, u.monthChars / limits.month * 100) + "%";
-  $("dailyLimit").value = limits.day; $("monthlyLimit").value = limits.month;
+  $("usageChipText").textContent = signedIn ? `Aujourd'hui ${fmtN(u.chars)} / ${fmtN(limits.day)}` : "Compte";
+  $("mDay").textContent = `${fmtN(u.chars)} / ${fmtN(limits.day)} caractères`;
+  $("mDayBar").style.width = Math.min(100, u.chars / limits.day * 100) + "%";
+  $("dailyLimit").value = limits.day;
 }
 
 // ---------------------------------------------------------------- Segmenter (sentence/paragraph aware, same rules as the iOS app)
@@ -538,115 +589,50 @@ function detectLang(text) {
   return arabic / letters >= 0.5 ? "ar" : "fr";
 }
 
-// ---------------------------------------------------------------- SSML + Azure synthesis
-const MAX_REQ_CHARS = 3000;     // text per request (keeps each request fast)
-const CONCURRENCY = 4;          // parallel requests (free tier allows 20 per minute)
-function prosodyAttrs(s) {
-  const rate = Math.round((s.speed - 1) * 100), pitch = Number(s.pitch);
-  return `rate="${rate >= 0 ? "+" : ""}${rate}%" pitch="${pitch >= 0 ? "+" : ""}${pitch}st"`;
-}
-// Groups sentences into requests of ≤ MAX_REQ_CHARS. One request can hold several <voice> blocks
-// (French and Arabic passages together), which keeps the number of calls low on the free tier.
-function planRequests(text, s) {
-  const main = voiceByName(project.voice);
-  const mainLang = primaryLang(main) === "ar" ? "ar" : primaryLang(main) === "fr" ? "fr" : (detectLang(text) || "fr");
-  const items = sentences(text).map(x => {
-    const lang = s.autoLang ? (detectLang(x.text) || mainLang) : mainLang;
-    let voice = main, xmlLang = null;
-    if (lang !== mainLang) {
-      if (isMulti(main) && speaks(main, lang)) xmlLang = lang === "ar" ? "ar-SA" : "fr-FR";
-      else voice = voiceByName(lang === "ar" ? s.compAr : s.compFr) || defaultVoice(lang, main.Gender);
-    } else if (isMulti(main) && primaryLang(main) !== lang) xmlLang = lang === "ar" ? "ar-SA" : "fr-FR";
-    return { ...x, voice: voice.ShortName, xmlLang };
-  });
-  const reqs = [];
-  for (const it of items) {
-    const last = reqs[reqs.length - 1];
-    if (last && last.chars + it.text.length <= MAX_REQ_CHARS) { last.items.push(it); last.chars += it.text.length; }
-    else reqs.push({ items: [it], chars: it.text.length, pauseBefore: last ? last.items[last.items.length - 1].pause : null });
-  }
-  return reqs;
-}
-function buildSSML(req, s) {
-  const silence = s.sentPause ? `<mstts:silence type="Sentenceboundary-exact" value="${s.sentPause}ms"/>` : "";
-  const blocks = [];
-  for (const it of req.items) {
-    const last = blocks[blocks.length - 1];
-    if (last && last.voice === it.voice && last.xmlLang === it.xmlLang) last.items.push(it);
-    else blocks.push({ voice: it.voice, xmlLang: it.xmlLang, items: [it] });
-  }
-  const isLastItem = it => it === req.items[req.items.length - 1];
-  const xml = blocks.map(b => {
-    const v = voiceByName(b.voice);
-    let body = "";
-    b.items.forEach(it => {
-      body += esc(it.text);
-      if (!isLastItem(it)) body += it.pause === "paragraph" ? ` <break time="${Math.round(s.pPara * 1000)}ms"/> ` : " ";
-    });
-    if (b.xmlLang) body = `<lang xml:lang="${b.xmlLang}">${body}</lang>`;
-    body = `<prosody ${prosodyAttrs(s)}>${body}</prosody>`;
-    if (s.style && v.StyleList.includes(s.style) && b.voice === project.voice) body = `<mstts:express-as style="${esc(s.style)}">${body}</mstts:express-as>`;
-    return `<voice name="${v.ShortName}">${silence}${body}</voice>`;
-  }).join("");
-  const lead = voiceByName(blocks[0].voice);
-  return `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="https://www.w3.org/2001/mstts" xml:lang="${lead.Locale}">${xml}</speak>`;
-}
-function parseWav(buf) {
-  const v = new DataView(buf);
-  let off = 12, data = null;
-  while (off + 8 <= buf.byteLength) {
-    const id = String.fromCharCode(v.getUint8(off), v.getUint8(off + 1), v.getUint8(off + 2), v.getUint8(off + 3));
-    let size = v.getUint32(off + 4, true);
-    if (id === "data") { if (size === 0 || off + 8 + size > buf.byteLength) size = buf.byteLength - off - 8; data = new Int16Array(buf.slice(off + 8, off + 8 + (size & ~1))); break; }
-    off += 8 + size + (size & 1);
-  }
-  if (!data) throw new Error("Réponse audio illisible.");
-  return data;
-}
-let cancelFlag = false;
-async function synthRequest(ssml, attempt = 0) {
-  let r;
-  try {
-    r = await fetch(base() + "/cognitiveservices/v1", {
-      method: "POST",
-      headers: { "Ocp-Apim-Subscription-Key": cfg.key, "Content-Type": "application/ssml+xml", "X-Microsoft-OutputFormat": "riff-44100hz-16bit-mono-pcm" },
-      body: ssml
-    });
-  } catch (e) {
-    if (attempt < 3) { await sleep(1000 * (attempt + 1)); return synthRequest(ssml, attempt + 1); }
-    throw new Error("Connexion impossible au service de voix. Vérifie ta connexion Internet.");
-  }
-  if (r.status === 429 || r.status >= 500) {
-    if (attempt < 6 && !cancelFlag) { const ra = Number(r.headers.get("Retry-After")) || 0; await sleep(Math.max(ra * 1000, 1500 * (attempt + 1))); return synthRequest(ssml, attempt + 1); }
-    throw new Error(r.status === 429 ? "Trop de demandes en même temps pour le palier gratuit. Patiente une minute puis réessaie." : `Le service de voix est indisponible (${r.status}).`);
-  }
-  if (r.status === 401 || r.status === 403) throw new Error("Clé Azure refusée. Ouvre les réglages (⚙︎) pour la vérifier, ou ton quota mensuel gratuit est épuisé.");
-  if (r.status === 400) throw new Error("Le texte n'a pas pu être lu par la voix choisie (requête invalide).");
-  if (!r.ok) throw new Error(`Erreur du service de voix (${r.status}).`);
-  return parseWav(await r.arrayBuffer());
-}
-
-// ---------------------------------------------------------------- Audio assembly
-function trimI16(x, thr = 120, margin = 0.06) {
+// ---------------------------------------------------------------- DSP: trim, pitch (resample + WSOLA), stitching with cross-fades
+function trim(x, thr = 0.004, margin = 0.04) {
   let a = 0, b = x.length - 1;
   while (a < x.length && Math.abs(x[a]) <= thr) a++;
   while (b > a && Math.abs(x[b]) <= thr) b--;
-  if (a >= x.length) return x.subarray(0, 0);
+  if (a >= x.length) return new Float32Array(0);
   const pad = Math.floor(margin * SR);
-  return x.subarray(Math.max(0, a - pad), Math.min(x.length, b + 1 + pad));
+  return x.slice(Math.max(0, a - pad), Math.min(x.length, b + 1 + pad));
 }
-function assemble(parts) { // parts: [{pcm: Int16Array, pauseBefore: seconds}]
-  const chunks = []; let frames = 0;
-  parts.forEach((p, i) => {
-    const pcm = Int16Array.from(i === 0 && parts.length === 1 ? p.pcm : trimI16(p.pcm));
-    const fade = Math.min(Math.floor(0.012 * SR), pcm.length >> 1);
-    for (let k = 0; k < fade; k++) { const g = Math.sin((k + 0.5) / fade * Math.PI / 2); pcm[k] = Math.round(pcm[k] * g); pcm[pcm.length - 1 - k] = Math.round(pcm[pcm.length - 1 - k] * g); }
-    if (i > 0 && p.pauseBefore > 0) { const n = Math.floor(p.pauseBefore * SR); chunks.push(new Int16Array(n)); frames += n; }
-    chunks.push(pcm); frames += pcm.length;
-  });
-  return { chunks, frames };
+function resample(x, ratio) { // output length = x.length / ratio
+  const n = Math.max(1, Math.floor(x.length / ratio)); const y = new Float32Array(n);
+  for (let i = 0; i < n; i++) { const p = i * ratio, k = Math.floor(p), f = p - k; y[i] = (x[k] || 0) * (1 - f) + (x[k + 1] || 0) * f; }
+  return y;
 }
-
+function wsola(x, alpha) { // time-stretch by alpha (output ≈ alpha × input length), pitch preserved
+  const N = 1024, Hs = N / 2, tol = 256, outLen = Math.floor(x.length * alpha);
+  const win = new Float32Array(N); for (let i = 0; i < N; i++) win[i] = 0.5 - 0.5 * Math.cos(2 * Math.PI * i / N);
+  const xp = new Float32Array(x.length + 2 * N + 2 * tol); xp.set(x, tol);
+  const y = new Float32Array(outLen + N), w = new Float32Array(outLen + N);
+  let prev = tol;
+  for (let k = 0; k * Hs < outLen; k++) {
+    const target = tol + Math.round(k * Hs / alpha);
+    let best = target;
+    if (k > 0) {
+      const nat = prev + Hs; let bestC = -Infinity;
+      for (let d = -tol; d <= tol; d += 8) {
+        const p = target + d; if (p < 0 || p + N > xp.length) continue;
+        let c = 0; for (let i = 0; i < N; i += 4) c += xp[nat + i] * xp[p + i];
+        if (c > bestC) { bestC = c; best = p; }
+      }
+    }
+    if (best + N > xp.length) break;
+    const o = k * Hs;
+    for (let i = 0; i < N; i++) { y[o + i] += xp[best + i] * win[i]; w[o + i] += win[i]; }
+    prev = best;
+  }
+  for (let i = 0; i < outLen; i++) if (w[i] > 1e-3) y[i] /= w[i];
+  return y.subarray(0, outLen);
+}
+function pitchShift(x, semitones) {
+  if (!semitones) return x;
+  const r = Math.pow(2, semitones / 12);
+  return wsola(resample(x, r), r);
+}
 // ---------------------------------------------------------------- Encoders
 function wavHeader(frames) {
   const b = new ArrayBuffer(44), v = new DataView(b), w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
@@ -698,21 +684,106 @@ function saveBlob(blob, name) {
   setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
 
+
+// ---------------------------------------------------------------- Synthesis through Puter
+function planRequests(text, s) {
+  const main = voiceById(project.voice);
+  const items = sentences(text).map(x => {
+    const lang = detectLang(x.text) || "fr";
+    let voice = main;
+    if (s.autoLang && main.lang !== "multi" && main.lang !== lang) voice = voiceById(lang === "ar" ? s.compAr : s.compFr) || main;
+    return { ...x, lang, voice: voice.id };
+  });
+  const reqs = [];
+  for (const it of items) {
+    const v = voiceById(it.voice), last = reqs[reqs.length - 1];
+    // Multilingual voices read French and Arabic in the same request; single-language voices keep one language.
+    const key = it.voice + "|" + (v.lang === "multi" ? "*" : it.lang);
+    if (last && last.key === key && last.chars + it.text.length + 1 <= MAX_REQ) {
+      last.text += (last.items[last.items.length - 1].pause === "paragraph" ? "\n\n" : " ") + it.text;
+      last.items.push(it); last.chars += it.text.length + 1; if (!last.langs.includes(it.lang)) last.langs.push(it.lang);
+    } else reqs.push({ key, voice: it.voice, langs: [it.lang], text: it.text, items: [it], chars: it.text.length, pauseBefore: last ? last.items[last.items.length - 1].pause : null });
+  }
+  return reqs;
+}
+function puterOptions(v, langs, s) {
+  const lang = [].concat(langs)[0];
+  switch (v.provider) {
+    case "openai": return { provider: "openai", model: "gpt-4o-mini-tts", voice: v.voice, response_format: "wav", instructions: instructionsFor(langs, s) };
+    case "gemini": return { provider: "gemini", voice: v.voice, instructions: instructionsFor(langs, s) };
+    case "elevenlabs": return { provider: "elevenlabs", model: "eleven_multilingual_v2", voice: v.voice, output_format: "mp3_44100_192", voice_settings: { stability: s.style === "conversation" || s.style === "story" ? 0.38 : 0.55, similarity_boost: 0.8 } };
+    case "xai": return { provider: "xai", voice: v.voice, language: [].concat(langs).length > 1 ? "auto" : lang, output_format: "wav" };
+    default: return { provider: "aws-polly", voice: v.voice, engine: v.engine || "neural", language: v.language };
+  }
+}
+function explainError(e) {
+  const raw = e && (e.message || e.error?.message || e.msg) || String(e);
+  const code = e && (e.code || e.error?.code || e.error);
+  if (code === "insufficient_funds" || /insufficient|funds|402|usage.?limit/i.test(raw)) return "Ton crédit gratuit Puter de ce mois est épuisé pour cette voix. Essaie une voix OpenAI ou Gemini (elles consomment moins) ou attends le mois prochain.";
+  if (/sign.?in|auth|401|403|token/i.test(raw)) return "Ta session Puter a expiré. Touche « Compte » en haut puis reconnecte-toi.";
+  if (/rate|429|too many/i.test(raw)) return "Trop de demandes d'un coup. Patiente une minute puis réessaie.";
+  return "La voix n'a pas pu être générée : " + raw;
+}
+let decodeCtx = null;
+async function toPCM(audioEl) {
+  const src = audioEl && (audioEl.src || String(audioEl));
+  const buf = await (await fetch(src)).arrayBuffer();
+  if (!decodeCtx) decodeCtx = new OfflineAudioContext(1, 1, SR);
+  const ab = await decodeCtx.decodeAudioData(buf);
+  const ch = ab.getChannelData(0);
+  if (ab.numberOfChannels > 1) { const o = ab.getChannelData(1); const m = new Float32Array(ch.length); for (let i = 0; i < ch.length; i++) m[i] = (ch[i] + o[i]) / 2; return m; }
+  return Float32Array.from(ch);
+}
+let cancelFlag = false;
+async function speak(text, v, lang, s, attempt = 0) {
+  try {
+    const audio = await P().ai.txt2speech(text, puterOptions(v, lang, s));
+    return await toPCM(audio);
+  } catch (e) {
+    const raw = String(e && (e.message || e.code || e.error?.message) || e);
+    if (attempt < 3 && !cancelFlag && /rate|429|timeout|network|fetch|5\d\d/i.test(raw)) { await sleep(1500 * (attempt + 1)); return speak(text, v, lang, s, attempt + 1); }
+    throw new Error(explainError(e));
+  }
+}
+
+// ---------------------------------------------------------------- Post-processing (speed/pitch, pitch-preserving)
+function speedPitch(x, speed, semitones) {
+  let y = x;
+  if (semitones) { const r = Math.pow(2, semitones / 12); y = wsola(resample(y, r), r); }
+  if (Math.abs(speed - 1) > 0.01) y = wsola(y, 1 / speed);
+  return y;
+}
+function assemble(parts) { // [{pcm: Float32Array, pauseBefore}]
+  const chunks = []; let frames = 0;
+  parts.forEach((p, i) => {
+    let f = trim(p.pcm, 0.003, 0.05);
+    if (!f.length) return;
+    f = Float32Array.from(f);
+    const fade = Math.min(Math.floor(0.012 * SR), f.length >> 1);
+    for (let k = 0; k < fade; k++) { const g = Math.sin((k + 0.5) / fade * Math.PI / 2); f[k] *= g; f[f.length - 1 - k] *= g; }
+    if (chunks.length && p.pauseBefore > 0) { const n = Math.floor(p.pauseBefore * SR); chunks.push(new Int16Array(n)); frames += n; }
+    const i16 = new Int16Array(f.length);
+    for (let k = 0; k < f.length; k++) i16[k] = Math.max(-32767, Math.min(32767, Math.round(f[k] * 32767)));
+    chunks.push(i16); frames += i16.length;
+  });
+  return { chunks, frames };
+}
+
 // ---------------------------------------------------------------- Projects (per browser)
-const DEFAULTS = { speed: 1, pitch: 0, style: "", sentPause: "", pPara: 0.7, autoLang: true, compAr: "", compFr: "" };
-const newProject = voice => ({ id: Math.random().toString(36).slice(2), title: "", script: "", voice: voice || "", settings: { ...DEFAULTS }, updated: Date.now() });
-let projects = store.get("dvs.projects2", []);
-let project = projects.find(p => p.id === store.get("dvs.current2", null)) || newProject();
-let audio = null;
-const ui = { lang: "fr", gender: "", locale: "", q: "" };
+const DEFAULTS = { speed: 1, pitch: 0, style: "narration", customStyle: "", accent: "fr-FR", pPara: 0.7, autoLang: true, compAr: "aws-polly:Hala", compFr: "aws-polly:Lea" };
+const newProject = voice => ({ id: Math.random().toString(36).slice(2), title: "", script: "", voice: voice || DEFAULT_VOICE, settings: { ...DEFAULTS }, updated: Date.now() });
+let projects = store.get("dvs.projects3", []);
+let project = projects.find(p => p.id === store.get("dvs.current3", null)) || newProject();
+let audio = null, signedIn = false;
+const ui = { gender: "", engine: "", q: "" };
 function saveProject() {
   if (!project.script.trim() && !project.title.trim()) return;
   project.updated = Date.now();
   const i = projects.findIndex(p => p.id === project.id);
   if (i >= 0) projects[i] = project; else projects.unshift(project);
   projects.sort((a, b) => b.updated - a.updated);
-  if (!store.set("dvs.projects2", projects)) { projects = projects.slice(0, 20); store.set("dvs.projects2", projects); }
-  store.set("dvs.current2", project.id);
+  if (!store.set("dvs.projects3", projects)) { projects = projects.slice(0, 20); store.set("dvs.projects3", projects); }
+  store.set("dvs.current3", project.id);
   renderProjects();
 }
 let saveTimer = null;
@@ -721,53 +792,47 @@ const scheduleSave = () => { clearTimeout(saveTimer); saveTimer = setTimeout(sav
 // ---------------------------------------------------------------- Rendering
 function fmt(sec) { sec = Math.max(0, Math.round(sec)); const h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), s = sec % 60; return h ? `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}` : `${m}:${String(s).padStart(2, "0")}`; }
 function setPressed(seg, val) { for (const b of $(seg).querySelectorAll("button")) b.setAttribute("aria-pressed", String(b.dataset.v === String(val))); }
-function avatarHTML(v) { return `<div class="avatar ${v.Gender === "Male" ? "m" : "f"}">${esc(shortName(v)[0] || "?")}<span class="flag">${flagOf(v)}</span></div>`; }
+const langTag = v => v.lang === "fr" ? "🇫🇷" : v.lang === "ar" ? "🇸🇦" : "🌐";
+function avatarHTML(v) { return `<div class="avatar ${v.gender === "M" ? "m" : "f"}">${esc(v.name[0])}<span class="flag">${langTag(v)}</span></div>`; }
+const langText = v => v.lang === "fr" ? "Français" : v.lang === "ar" ? "Arabe" : "Français + arabe";
 function renderVoice() {
-  const v = voiceByName(project.voice); if (!v) return;
-  $("curAvatar").className = "avatar " + (v.Gender === "Male" ? "m" : "f");
-  $("curInitial").textContent = shortName(v)[0];
-  $("curFlag").textContent = flagOf(v);
-  $("curName").textContent = shortName(v);
-  $("curLabel").textContent = `${voiceLabel(v)} · ${regionLabel(v)}`;
-  $("curDetail").textContent = [isMulti(v) ? "Multilingue (FR + AR + 40 langues)" : "Voix neuronale", v.StyleList.length ? `${v.StyleList.length} styles` : ""].filter(Boolean).join(" · ");
-  // Styles
-  const sf = $("styleField"), sel = $("styleSel");
-  if (v.StyleList.length) {
-    sf.hidden = false;
-    sel.innerHTML = `<option value="">Neutre (par défaut)</option>` + v.StyleList.map(st => `<option value="${esc(st)}">${esc(STYLE_FR[st] || st)}</option>`).join("");
-    sel.value = v.StyleList.includes(project.settings.style) ? project.settings.style : "";
-  } else { sf.hidden = true; }
+  const v = voiceById(project.voice) || voiceById(DEFAULT_VOICE);
+  project.voice = v.id;
+  $("curAvatar").className = "avatar " + (v.gender === "M" ? "m" : "f");
+  $("curInitial").textContent = v.name[0]; $("curFlag").textContent = langTag(v);
+  $("curName").textContent = v.name;
+  $("curLabel").textContent = `${v.gender === "M" ? "Homme" : "Femme"} · ${v.desc}`;
+  $("curDetail").textContent = `${ENGINES[v.provider]} · ${langText(v)}${v.premium ? " · Premium (consomme plus de crédit)" : ""}`;
+  const instr = v.provider === "openai" || v.provider === "gemini";
+  $("styleSel").disabled = !instr && v.provider !== "elevenlabs"; $("accentSel").disabled = !instr;
   renderGrid(); renderPreviewButtons(); renderCompanions(); updateCost();
 }
-function renderLocaleFilter() {
-  const locs = [...new Set(VOICES.filter(v => !ui.lang || primaryLang(v) === ui.lang || (isMulti(v) && speaks(v, ui.lang))).map(v => v.Locale))];
-  $("localeFilter").innerHTML = `<option value="">Tous les accents</option>` + locs.map(l => `<option value="${l}">${esc((LOCALES[l] || l) + " (" + l + ")")}</option>`).join("");
-  $("localeFilter").value = locs.includes(ui.locale) ? ui.locale : "";
-  if (!locs.includes(ui.locale)) ui.locale = "";
-}
 function renderGrid() {
-  const reco = $("recoOnly").checked, q = ui.q.trim().toLowerCase();
-  const list = VOICES.filter(v => (!ui.lang || primaryLang(v) === ui.lang || (isMulti(v) && speaks(v, ui.lang)))
-    && (!ui.gender || v.Gender === ui.gender) && (!ui.locale || v.Locale === ui.locale)
-    && (!reco || RECOMMENDED.includes(v.ShortName)) && (!q || shortName(v).toLowerCase().includes(q)));
+  const q = ui.q.trim().toLowerCase();
+  const list = VOICES.filter(v => (!ui.gender || v.gender === ui.gender)
+    && (!ui.engine || (ui.engine === "other" ? ["xai", "aws-polly"].includes(v.provider) : v.provider === ui.engine))
+    && (!q || (v.name + " " + v.desc + " " + ENGINES[v.provider]).toLowerCase().includes(q)));
+  list.sort((a, b) => (b.reco ? 1 : 0) - (a.reco ? 1 : 0));
   $("voiceGrid").innerHTML = list.length ? list.map(v => `
-    <div class="vtile" role="button" tabindex="0" data-voice="${v.ShortName}" aria-pressed="${v.ShortName === project.voice}" aria-label="${esc(voiceLabel(v) + " · " + shortName(v))}">
+    <div class="vtile" role="button" tabindex="0" data-voice="${v.id}" aria-pressed="${v.id === project.voice}" aria-label="${esc(v.name + ", " + v.desc)}">
       ${avatarHTML(v)}
-      <div class="txt"><div class="nm">${esc(shortName(v))}</div>
-        <div class="sub">${esc(voiceLabel(v))} · ${esc(regionLabel(v))}</div>
-        <div>${isMulti(v) ? '<span class="tag">Multilingue</span>' : ""}${v.StyleList.length ? `<span class="tag">${v.StyleList.length} styles</span>` : ""}${RECOMMENDED.slice(0, 16).includes(v.ShortName) || /^ar-(SA|EG)/.test(v.ShortName) && RECOMMENDED.includes(v.ShortName) ? '<span class="tag">Narration</span>' : ""}</div></div>
-      <button class="round" data-preview="${v.ShortName}" aria-label="Écouter ${esc(shortName(v))}"><svg class="icon"><use href="#i-play"/></svg></button>
+      <div class="txt"><div class="nm">${esc(v.name)}</div>
+        <div class="sub">${v.gender === "M" ? "Homme" : "Femme"} · ${esc(v.desc)}</div>
+        <div><span class="tag">${esc(ENGINES[v.provider])}</span>${v.reco ? '<span class="tag">Narration</span>' : ""}${v.premium ? '<span class="tag">Premium</span>' : ""}${v.lang !== "multi" ? `<span class="tag">${v.lang.toUpperCase()}</span>` : ""}</div></div>
+      <button class="round" data-preview="${v.id}" aria-label="Écouter ${esc(v.name)}"><svg class="icon"><use href="#i-play"/></svg></button>
     </div>`).join("") : `<div class="hint">Aucune voix ne correspond à ces filtres.</div>`;
   $("voiceCount").textContent = `${VOICES.length} voix`;
   renderPreviewButtons();
 }
 function renderCompanions() {
-  const mk = (lang, cur) => VOICES.filter(v => primaryLang(v) === lang).map(v => `<option value="${v.ShortName}" ${v.ShortName === cur ? "selected" : ""}>${esc(shortName(v) + " – " + (v.Gender === "Male" ? "Homme" : "Femme") + " · " + regionLabel(v))}</option>`).join("");
-  const main = voiceByName(project.voice); if (!main) return;
-  if (!voiceByName(project.settings.compAr)) project.settings.compAr = (defaultVoice("ar", main.Gender) || {}).ShortName || "";
-  if (!voiceByName(project.settings.compFr)) project.settings.compFr = (defaultVoice("fr", main.Gender) || {}).ShortName || "";
+  const mk = (lang, cur) => VOICES.filter(v => v.lang === lang || v.lang === "multi").map(v => `<option value="${v.id}" ${v.id === cur ? "selected" : ""}>${esc(v.name + " – " + (v.gender === "M" ? "Homme" : "Femme") + " · " + ENGINES[v.provider])}</option>`).join("");
   $("compAr").innerHTML = mk("ar", project.settings.compAr);
   $("compFr").innerHTML = mk("fr", project.settings.compFr);
+}
+const billable = t => sentences(t).reduce((a, x) => a + x.text.length, 0);
+function updateCost() {
+  const n = billable(project.script), u = usage();
+  $("costHint").textContent = n ? `Cette génération utilisera ${fmtN(n)} caractères · reste aujourd'hui : ${fmtN(Math.max(0, limits.day - u.chars))}` : "";
 }
 function renderStats() {
   const t = project.script, chars = Array.from(t).length, words = (t.match(/\S+/g) || []).length;
@@ -775,16 +840,12 @@ function renderStats() {
   $("stDur").textContent = "≈ " + fmt(chars / 15 / project.settings.speed);
   updateCost();
 }
-function updateCost() {
-  const n = billable(project.script), u = usage();
-  $("costHint").textContent = n ? `Cette génération utilisera ${fmtN(n)} caractères · reste aujourd'hui : ${fmtN(Math.max(0, limits.day - u.dayChars))}` : "";
-}
-const billable = t => sentences(t).reduce((a, x) => a + x.text.length, 0);
 function renderSettings() {
   const s = project.settings;
+  $("styleSel").value = s.style; $("customField").hidden = s.style !== "custom"; $("customStyle").value = s.customStyle || "";
+  $("accentSel").value = s.accent;
   $("speed").value = s.speed; $("speedVal").textContent = Number(s.speed).toFixed(2) + "×";
   $("pitch").value = s.pitch; $("pitchVal").textContent = Number(s.pitch) === 0 ? "Naturelle" : (s.pitch > 0 ? "+" : "") + Number(s.pitch).toFixed(1) + " demi-ton" + (Math.abs(s.pitch) >= 2 ? "s" : "");
-  $("sentPause").value = s.sentPause || "";
   $("pPara").value = s.pPara; $("pParaVal").textContent = Number(s.pPara).toFixed(1) + " s";
   $("autoLang").checked = !!s.autoLang;
 }
@@ -792,7 +853,7 @@ function renderProjects() {
   const box = $("projects");
   if (!projects.length) { box.innerHTML = `<div class="hint">Aucun projet pour l'instant. Écris un script : il sera sauvegardé ici.</div>`; return; }
   box.innerHTML = projects.map(p => {
-    const v = voiceByName(p.voice) || { Gender: "Female", Locale: "fr-FR", DisplayName: "?" , ShortName: "" };
+    const v = voiceById(p.voice) || voiceById(DEFAULT_VOICE);
     const title = esc(p.title || p.script.split("\n")[0].split(/\s+/).slice(0, 6).join(" ") || "Projet sans titre");
     return `<div class="proj" aria-current="${p.id === project.id}">${avatarHTML(v)}
       <button class="open" data-open="${p.id}"><div class="t">${title}</div><div class="e">${esc(p.script.slice(0, 120).replace(/\n/g, " ")) || "&nbsp;"}</div></button>
@@ -803,54 +864,52 @@ function showProgress(f, text) { $("progressBox").hidden = false; $("bar").style
 function hideProgress() { $("progressBox").hidden = true; }
 function showError(msg) { $("errorBox").hidden = !msg; $("errorBox").textContent = msg || ""; }
 function loadProjectIntoUI() {
-  if (!voiceByName(project.voice)) project.voice = (defaultVoice("fr", "Female") || {}).ShortName;
+  project.settings = { ...DEFAULTS, ...project.settings };
   $("title").value = project.title; $("script").value = project.script;
   renderSettings(); renderVoice(); renderStats(); renderProjects(); clearAudio();
 }
 
-// ---------------------------------------------------------------- Previews (cached in IndexedDB so they cost quota once)
-function idb() { return new Promise((res, rej) => { try { const r = indexedDB.open("dianavoicestudio-previews", 1); r.onupgradeneeded = () => r.result.createObjectStore("p"); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); } catch (e) { rej(e); } }); }
+// ---------------------------------------------------------------- Previews (cached so they cost credit once)
+function idb() { return new Promise((res, rej) => { try { const r = indexedDB.open("dianavoicestudio-previews3", 1); r.onupgradeneeded = () => r.result.createObjectStore("p"); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); } catch (e) { rej(e); } }); }
 async function idbGet(k) { try { const db = await idb(); return await new Promise(res => { const q = db.transaction("p").objectStore("p").get(k); q.onsuccess = () => res(q.result || null); q.onerror = () => res(null); }); } catch { return null; } }
 async function idbPut(k, v) { try { const db = await idb(); await new Promise(res => { const t = db.transaction("p", "readwrite"); t.objectStore("p").put(v, k); t.oncomplete = res; t.onerror = res; }); } catch { /* optional */ } }
 const previewAudio = new Audio(); let previewing = null, previewLoading = null;
 previewAudio.onended = () => { previewing = null; renderPreviewButtons(); };
-function previewText(v) {
-  const name = shortName(v);
-  return primaryLang(v) === "ar"
-    ? `مرحبًا، أنا ${v.LocalName && /[؀-ۿ]/.test(v.LocalName) ? v.LocalName : name}. يسعدني أن أروي قصصكم وأن أقدّم محتواكم بصوتٍ طبيعيٍّ وواضح.`
-    : `Bonjour, je m'appelle ${name}. Je raconte vos histoires et je donne vie à vos vidéos, avec une voix naturelle et chaleureuse.`;
-}
+const previewText = v => v.lang === "ar"
+  ? "مرحبًا، يسعدني أن أروي قصصكم وأن أقدّم محتواكم بصوتٍ طبيعيٍّ وواضح."
+  : `Bonjour, je m'appelle ${v.name}. Je raconte vos histoires et je donne vie à vos vidéos, avec une voix naturelle et chaleureuse.`;
 function renderPreviewButtons() {
   const icon = id => previewLoading === id ? "#i-load" : previewing === id ? "#i-stop" : "#i-play";
   for (const b of document.querySelectorAll("[data-preview]")) b.innerHTML = `<svg class="icon"><use href="${icon(b.dataset.preview)}"/></svg>`;
   $("curPreview").innerHTML = `<svg class="icon"><use href="${icon(project.voice)}"/></svg>`;
 }
-async function togglePreview(name) {
-  if (previewing === name) { previewAudio.pause(); previewing = null; renderPreviewButtons(); return; }
+async function togglePreview(id) {
+  if (previewing === id) { previewAudio.pause(); previewing = null; renderPreviewButtons(); return; }
   if (previewLoading) return;
   previewAudio.pause(); previewing = null; $("audio").pause();
-  const v = voiceByName(name); if (!v) return;
-  const key = "v2/" + name;
+  const v = voiceById(id); if (!v) return;
+  const key = "p1/" + id;
   try {
     let blob = await idbGet(key);
     if (!blob) {
-      previewLoading = name; renderPreviewButtons();
-      const text = previewText(v);
-      const ssml = `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="${v.Locale}"><voice name="${v.ShortName}">${esc(text)}</voice></speak>`;
-      const pcm = await synthRequest(ssml);
+      previewLoading = id; renderPreviewButtons();
+      const text = previewText(v), lang = v.lang === "ar" ? "ar" : "fr";
+      const pcm = await speak(text, v, lang, { ...DEFAULTS, accent: lang === "ar" ? "ar-MSA" : "fr-FR" });
       addUsage(text.length);
-      blob = new Blob([wavHeader(pcm.length), bytesOf(pcm)], { type: "audio/wav" });
+      const { chunks, frames } = assemble([{ pcm, pauseBefore: 0 }]);
+      blob = new Blob([wavHeader(frames), ...chunks.map(bytesOf)], { type: "audio/wav" });
       idbPut(key, blob);
     }
     previewLoading = null;
     previewAudio.src = URL.createObjectURL(blob);
-    await previewAudio.play(); previewing = name;
+    await previewAudio.play(); previewing = id;
   } catch (e) { previewLoading = null; showError(e.message || String(e)); }
   renderPreviewButtons();
 }
 
 // ---------------------------------------------------------------- Generation
 let generating = false;
+const CONCURRENCY = 4;
 function clearAudio() {
   const a = $("audio"); a.pause(); if (audio && audio.url) URL.revokeObjectURL(audio.url); a.removeAttribute("src");
   audio = null; $("playerCard").hidden = true; $("genLabel").textContent = "Générer";
@@ -870,21 +929,21 @@ async function generate() {
   let wake = null; try { wake = await navigator.wakeLock?.request("screen"); } catch { /* optional */ }
   const t0 = performance.now();
   try {
-    const results = new Array(reqs.length); let next = 0, done = 0, usedChars = 0;
-    showProgress(0.02, `Génération : 0 / ${reqs.length} parties…`);
+    const results = new Array(reqs.length); let next = 0, done = 0;
+    showProgress(0.03, `Génération : 0 / ${reqs.length} partie${reqs.length > 1 ? "s" : ""}…`);
     const worker = async () => {
       while (next < reqs.length && !cancelFlag) {
-        const i = next++;
-        results[i] = await synthRequest(buildSSML(reqs[i], s));
-        usedChars += reqs[i].chars; addUsage(reqs[i].chars);
-        done++;
-        const el = (performance.now() - t0) / 1000;
-        showProgress(0.05 + 0.9 * done / reqs.length, `Partie ${done} / ${reqs.length} · ${el.toFixed(1)} s`);
+        const i = next++, r = reqs[i];
+        const raw = await speak(r.text, voiceById(r.voice), r.langs, s);
+        results[i] = speedPitch(raw, Number(s.speed), Number(s.pitch));
+        addUsage(r.chars); done++;
+        showProgress(0.05 + 0.9 * done / reqs.length, `Partie ${done} / ${reqs.length} · ${((performance.now() - t0) / 1000).toFixed(1)} s`);
+        await nextFrame();
       }
     };
     await Promise.all(Array.from({ length: Math.min(CONCURRENCY, reqs.length) }, worker));
     if (cancelFlag) throw new Error("cancel");
-    const parts = reqs.map((r, i) => ({ pcm: results[i], pauseBefore: r.pauseBefore === "paragraph" ? s.pPara : r.pauseBefore === "sentence" ? 0.25 / s.speed : 0.02 }));
+    const parts = reqs.map((r, i) => ({ pcm: results[i], pauseBefore: (r.pauseBefore === "paragraph" ? s.pPara : r.pauseBefore === "sentence" ? 0.3 : 0.02) / s.speed }));
     const { chunks, frames } = assemble(parts);
     if (!frames) throw new Error("Aucun son n'a été généré.");
     const url = URL.createObjectURL(new Blob([wavHeader(frames), ...chunks.map(bytesOf)], { type: "audio/wav" }));
@@ -892,6 +951,7 @@ async function generate() {
     $("audio").src = url; $("playerCard").hidden = false; $("audioDur").textContent = fmt(frames / SR);
     hideProgress(); drawWave(); updateTimes(); $("dlStatus").textContent = `Généré en ${((performance.now() - t0) / 1000).toFixed(1)} s.`;
     $("playerCard").scrollIntoView({ behavior: "smooth", block: "nearest" });
+    refreshCredit();
   } catch (e) {
     hideProgress();
     if ((e && e.message) !== "cancel") showError(e.message || String(e));
@@ -940,59 +1000,57 @@ async function withBusy(label, fn) {
   try { await fn(); } catch (e) { $("dlStatus").textContent = "Erreur : " + (e.message || e); } finally { all.forEach(b => b.disabled = false); if (!aacOK) $("dlM4a").disabled = true; }
 }
 
-// ---------------------------------------------------------------- Setup / settings
+// ---------------------------------------------------------------- Account
 async function connect() {
-  const key = $("keyInput").value.trim(), region = $("regionInput").value;
   $("setupError").hidden = true;
-  if (key.length < 20) { $("setupError").hidden = false; $("setupError").textContent = "Colle la Clé 1 complète de ta ressource Speech."; return; }
   $("connectBtn").disabled = true; $("connectBtn").textContent = "Connexion…";
-  const prev = cfg; cfg = { key, region };
-  try { await loadVoices(true); store.set("dvs.azure", cfg); showStudio(); }
-  catch (e) { cfg = prev; $("setupError").hidden = false; $("setupError").textContent = e.message || String(e); }
-  finally { $("connectBtn").disabled = false; $("connectBtn").textContent = "Connecter les voix"; }
+  try {
+    await P().auth.signIn();
+    signedIn = true; showStudio();
+  } catch (e) {
+    $("setupError").hidden = false;
+    $("setupError").textContent = "Connexion non terminée. Autorise les fenêtres pop-up pour ce site, puis réessaie." + (e && e.error === "unsupported_origin" ? " (Ouvre le site via son adresse https.)" : "");
+  } finally { $("connectBtn").disabled = false; $("connectBtn").textContent = "Se connecter gratuitement"; }
 }
-function showSetup() { $("setupCard").hidden = false; $("studio").hidden = true; $("settingsCard").hidden = true; if (cfg) { $("keyInput").value = ""; $("regionInput").value = cfg.region; } renderUsage(); }
-function showStudio() {
-  $("setupCard").hidden = true; $("studio").hidden = false; $("studio").style.display = "grid";
-  ui.lang = "fr"; setPressed("langSeg", ui.lang); setPressed("genderSeg", ui.gender);
-  renderLocaleFilter(); loadProjectIntoUI(); renderUsage();
+function showSetup() { $("setupCard").hidden = false; $("studio").hidden = true; $("settingsCard").hidden = true; renderUsage(); }
+async function showStudio() {
+  $("setupCard").hidden = true; $("studio").hidden = false;
+  setPressed("genderSeg", ui.gender); setPressed("engineSeg", ui.engine);
+  loadProjectIntoUI(); renderUsage(); refreshCredit();
+  try { const u = await P().auth.getUser(); $("accountName").textContent = u && u.username ? "Connectée en tant que " + u.username : ""; } catch { /* optional */ }
 }
 
 // ---------------------------------------------------------------- Events
 $("connectBtn").onclick = connect;
-$("keyInput").addEventListener("keydown", e => { if (e.key === "Enter") connect(); });
-$("usageChip").onclick = () => { const s = $("settingsCard"); s.hidden = !s.hidden; renderUsage(); if (!s.hidden) s.scrollIntoView({ behavior: "smooth" }); };
+$("usageChip").onclick = () => { if (!signedIn) { showSetup(); return; } const s = $("settingsCard"); s.hidden = !s.hidden; renderUsage(); refreshCredit(); if (!s.hidden) s.scrollIntoView({ behavior: "smooth" }); };
 $("closeSettings").onclick = () => { $("settingsCard").hidden = true; };
-$("dailyLimit").onchange = e => { limits.day = Math.max(1000, Number(e.target.value) || DEFAULT_LIMITS.day); store.set("dvs.limits", limits); renderUsage(); updateCost(); };
-$("monthlyLimit").onchange = e => { limits.month = Math.max(1000, Number(e.target.value) || DEFAULT_LIMITS.month); store.set("dvs.limits", limits); renderUsage(); };
-$("changeKey").onclick = showSetup;
-$("forgetKey").onclick = e => {
-  const b = e.currentTarget;
-  if (b.dataset.confirm !== "1") { b.dataset.confirm = "1"; b.textContent = "Confirmer la suppression"; setTimeout(() => { b.dataset.confirm = ""; b.textContent = "Supprimer la clé de ce navigateur"; }, 3000); return; }
-  store.del("dvs.azure"); store.del("dvs.voices"); cfg = null; showSetup();
-};
+$("dailyLimit").onchange = e => { limits.day = Math.max(500, Number(e.target.value) || 10000); store.set("dvs.limits3", limits); renderUsage(); updateCost(); };
+$("signOut").onclick = async () => { try { await P().auth.signOut(); } catch { /* ignore */ } signedIn = false; showSetup(); };
 $("script").addEventListener("input", e => { project.script = e.target.value; renderStats(); scheduleSave(); });
 $("title").addEventListener("input", e => { project.title = e.target.value; scheduleSave(); });
 $("clearScript").onclick = () => { project.script = ""; $("script").value = ""; renderStats(); scheduleSave(); $("script").focus(); };
 $("insertPause").onclick = () => { const ta = $("script"), s = ta.selectionStart ?? ta.value.length; ta.setRangeText("\n", s, ta.selectionEnd ?? s, "end"); project.script = ta.value; renderStats(); scheduleSave(); ta.focus(); };
-$("newProject").onclick = () => { if (generating) return; saveProject(); project = newProject(project.voice); store.set("dvs.current2", project.id); loadProjectIntoUI(); $("script").focus(); };
-$("togglePicker").onclick = () => { const p = $("picker"); p.hidden = !p.hidden; p.style.display = p.hidden ? "none" : "grid"; $("togglePicker").setAttribute("aria-expanded", String(!p.hidden)); };
-$("langSeg").onclick = e => { const b = e.target.closest("button"); if (!b) return; ui.lang = b.dataset.v; setPressed("langSeg", ui.lang); renderLocaleFilter(); renderGrid(); };
+$("newProject").onclick = () => { if (generating) return; saveProject(); project = newProject(project.voice); store.set("dvs.current3", project.id); loadProjectIntoUI(); $("script").focus(); };
+$("togglePicker").onclick = () => { const p = $("picker"); p.hidden = !p.hidden; $("togglePicker").setAttribute("aria-expanded", String(!p.hidden)); };
 $("genderSeg").onclick = e => { const b = e.target.closest("button"); if (!b) return; ui.gender = b.dataset.v; setPressed("genderSeg", ui.gender); renderGrid(); };
-$("localeFilter").onchange = e => { ui.locale = e.target.value; renderGrid(); };
+$("engineSeg").onclick = e => { const b = e.target.closest("button"); if (!b) return; ui.engine = b.dataset.v; setPressed("engineSeg", ui.engine); renderGrid(); };
 $("voiceSearch").oninput = e => { ui.q = e.target.value; renderGrid(); };
-$("recoOnly").onchange = renderGrid;
 $("voiceGrid").addEventListener("click", e => {
   const pb = e.target.closest("[data-preview]"); if (pb) { e.stopPropagation(); togglePreview(pb.dataset.preview); return; }
   const t = e.target.closest("[data-voice]"); if (!t || generating) return;
-  project.voice = t.dataset.voice; project.settings.compAr = ""; project.settings.compFr = ""; renderVoice(); scheduleSave();
+  project.voice = t.dataset.voice;
+  const v = voiceById(project.voice);
+  if (v.lang === "ar" && !project.settings.accent.startsWith("ar")) project.settings.accent = "ar-MSA";
+  if (v.lang === "fr" && !project.settings.accent.startsWith("fr")) project.settings.accent = "fr-FR";
+  renderSettings(); renderVoice(); scheduleSave();
 });
 $("voiceGrid").addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target.dataset && e.target.dataset.voice) { e.preventDefault(); e.target.click(); } });
 $("curPreview").onclick = () => togglePreview(project.voice);
-$("styleSel").onchange = e => { project.settings.style = e.target.value; scheduleSave(); };
+$("styleSel").onchange = e => { project.settings.style = e.target.value; $("customField").hidden = e.target.value !== "custom"; scheduleSave(); };
+$("customStyle").oninput = e => { project.settings.customStyle = e.target.value.slice(0, 600); scheduleSave(); };
+$("accentSel").onchange = e => { project.settings.accent = e.target.value; scheduleSave(); };
 const bindRange = (id, key) => $(id).addEventListener("input", e => { project.settings[key] = Number(e.target.value); renderSettings(); renderStats(); scheduleSave(); });
 bindRange("speed", "speed"); bindRange("pitch", "pitch"); bindRange("pPara", "pPara");
-$("sentPause").onchange = e => { project.settings.sentPause = e.target.value; scheduleSave(); };
 $("autoLang").onchange = e => { project.settings.autoLang = e.target.checked; scheduleSave(); };
 $("compAr").onchange = e => { project.settings.compAr = e.target.value; scheduleSave(); };
 $("compFr").onchange = e => { project.settings.compFr = e.target.value; scheduleSave(); };
@@ -1000,10 +1058,10 @@ $("generate").onclick = generate;
 $("projects").addEventListener("click", e => {
   const o = e.target.closest("[data-open]"), d = e.target.closest("[data-del]");
   if (generating) return;
-  if (o) { saveProject(); project = projects.find(p => p.id === o.dataset.open) || project; store.set("dvs.current2", project.id); loadProjectIntoUI(); window.scrollTo({ top: 0, behavior: "smooth" }); }
+  if (o) { saveProject(); project = projects.find(p => p.id === o.dataset.open) || project; store.set("dvs.current3", project.id); loadProjectIntoUI(); window.scrollTo({ top: 0, behavior: "smooth" }); }
   if (d) {
     if (d.dataset.confirm !== "1") { d.dataset.confirm = "1"; d.style.color = "var(--danger)"; d.setAttribute("aria-label", "Confirmer la suppression"); setTimeout(() => { d.dataset.confirm = ""; d.style.color = ""; }, 3000); return; }
-    projects = projects.filter(p => p.id !== d.dataset.del); store.set("dvs.projects2", projects);
+    projects = projects.filter(p => p.id !== d.dataset.del); store.set("dvs.projects3", projects);
     if (project.id === d.dataset.del) { project = newProject(project.voice); loadProjectIntoUI(); } else renderProjects();
   }
 });
@@ -1024,8 +1082,12 @@ window.addEventListener("pagehide", saveProject);
 // ---------------------------------------------------------------- Boot
 aacSupported().then(ok => { aacOK = ok; $("dlM4a").disabled = !ok; if (!ok) $("dlM4a").querySelector("small").textContent = "non disponible sur ce navigateur"; });
 renderUsage();
-if (!cfg) showSetup();
-else loadVoices().then(showStudio).catch(e => { showSetup(); $("setupError").hidden = false; $("setupError").textContent = e.message || String(e); });
+(async () => {
+  for (let i = 0; i < 50 && !P(); i++) await sleep(100);
+  if (!P()) { showSetup(); $("setupError").hidden = false; $("setupError").textContent = "Le service de voix n'a pas pu se charger. Vérifie ta connexion puis recharge la page."; return; }
+  try { signedIn = !!P().auth.isSignedIn(); } catch { signedIn = false; }
+  if (signedIn) showStudio(); else showSetup();
+})();
 </script>
 </body>
 </html>

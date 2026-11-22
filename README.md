@@ -241,29 +241,26 @@ y compris l'inférence réelle, à chaque push.
 
 ---
 
-## Studio en ligne aux voix naturelles (Azure AI Speech)
+## Studio en ligne aux voix naturelles (sans carte bancaire)
 
 `docs/index.html` est le studio principal en ligne, publié avec **GitHub Pages** :
 **https://dianahilali3-prog.github.io/StudioVoice/**
 
-- Voix neuronales Microsoft Azure : toutes les voix françaises (France, Canada, Belgique, Suisse) et
-  arabes (Arabie saoudite, Égypte, Maroc, Algérie, Tunisie, Émirats, Liban…), plus les voix
-  multilingues (Vivienne, Remy, Ava, Andrew…), avec une sélection « Recommandées pour la narration »
-  et des styles de lecture (narration, conversation, joyeux…) quand la voix les propose.
-- Génération très rapide : le script est découpé en requêtes de 3 000 caractères envoyées en parallèle,
-  les passages arabes et français d'un même script partagent les mêmes requêtes.
-- Quotas : palier gratuit Azure F0 = 500 000 caractères par mois. L'app applique un quota par jour
-  réglable (16 000 caractères par défaut) et un compteur mensuel.
-- Téléchargement direct en MP3, WAV et M4A.
-- La clé Azure reste dans le navigateur de l'utilisatrice et n'est envoyée qu'à Azure.
+- Connexion avec un compte **Puter** gratuit (adresse e-mail, aucune carte bancaire, aucune clé API).
+  Chaque compte reçoit un crédit gratuit mensuel ; l'app ajoute un quota quotidien réglable
+  (10 000 caractères par défaut) pour le répartir sur le mois.
+- **68 voix** : OpenAI gpt-4o-mini-tts (13), Google Gemini TTS (30), ElevenLabs multilingual v2 (14),
+  xAI Grok (5) et Amazon Polly (Léa, Rémi, Gabrielle, Liam, Hala, Zayd). Toutes lisent le français et
+  l'arabe, sauf Polly (une langue par voix, voix associée automatique pour l'autre langue).
+- Styles de lecture (narration, conversation, storytelling, publicité, journal, calme, motivation ou
+  consigne personnalisée) et accents (France, Québec, Belgique, arabe standard, marocain, égyptien,
+  levantin, Golfe), transmis aux voix OpenAI et Gemini.
+- Génération rapide : requêtes de 1 200 caractères envoyées 4 par 4 en parallèle.
+- Vitesse et hauteur réglables, téléchargement direct en MP3, WAV et M4A, projets sauvegardés.
 
 **Activer le site (une fois)** : GitHub › dépôt StudioVoice › *Settings* › *Pages* ›
 *Build and deployment* › Source *Deploy from a branch* › branche `claude/diana-voice-studio-ios-4v4ay9`,
 dossier `/docs` › *Save*. Le lien est actif une à deux minutes plus tard.
-
-**Créer la clé gratuite** : compte sur azure.microsoft.com/free › créer une ressource *Speech*
-(région West Europe, niveau *Free F0*) › *Clés et point de terminaison* › copier la Clé 1 et la région
-dans l'app.
 
 ---
 
