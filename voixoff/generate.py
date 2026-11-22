@@ -9,7 +9,7 @@ Utilisé par .github/workflows/voix-off.yml, mais fonctionne aussi sur n'importe
 
 Format d'une demande (fichier texte) : quelques réglages, une ligne « --- », puis le script.
 
-    voix: clara
+    voix: ingrid
     vitesse: 1.0
     emotion: 0.5
     langue: auto
@@ -34,7 +34,7 @@ SR_OUT = 44100
 # ---------------------------------------------------------------- demande
 
 def parse_request(text):
-    params = {"voix": "clara", "vitesse": "1.0", "emotion": "0.5", "hauteur": "0", "langue": "auto", "titre": ""}
+    params = {"voix": "ingrid", "vitesse": "1.0", "emotion": "0.5", "hauteur": "0", "langue": "auto", "titre": ""}
     if "\n---" in text or text.startswith("---"):
         head, _, body = text.partition("---")
         for line in head.splitlines():
