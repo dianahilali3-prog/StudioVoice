@@ -34,7 +34,7 @@ SR_OUT = 44100
 # ---------------------------------------------------------------- demande
 
 def parse_request(text):
-    params = {"voix": "clara", "vitesse": "1.0", "emotion": "0.5", "langue": "auto", "titre": ""}
+    params = {"voix": "clara", "vitesse": "1.0", "emotion": "0.5", "hauteur": "0", "langue": "auto", "titre": ""}
     if "\n---" in text or text.startswith("---"):
         head, _, body = text.partition("---")
         for line in head.splitlines():
@@ -150,6 +150,7 @@ def cmd_plan(args):
         "voice": voice,
         "speed": min(2.0, max(0.5, float(params.get("vitesse", 1) or 1))),
         "emotion": min(1.5, max(0.25, float(params.get("emotion", 0.5) or 0.5))),
+        "pitch": min(6.0, max(-6.0, float(params.get("hauteur", 0) or 0))),
         "title": params.get("titre") or script.split("\n")[0][:60],
         "parts": -(-len(chunks) // size),
         "chunks": chunks,
@@ -241,7 +242,14 @@ def cmd_merge(args):
     title = re.sub(r"[^\w\- ]+", " ", plan.get("title") or "voix-off").strip()[:50] or "voix-off"
     base = out / title.replace(" ", "-")
     tempo = plan["speed"]
-    filt = f"atempo={tempo}" if abs(tempo - 1) > 0.01 else "anull"
+    filters = []
+    semitones = plan.get("pitch", 0) or 0
+    if abs(semitones) > 0.01:  # change la hauteur sans changer la durée
+        r = 2 ** (semitones / 12)
+        filters += [f"asetrate={int(sr * r)}", f"aresample={sr}", f"atempo={1 / r:.6f}"]
+    if abs(tempo - 1) > 0.01:
+        filters.append(f"atempo={tempo}")
+    filt = ",".join(filters) or "anull"
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(raw), "-af", filt, "-ar", str(SR_OUT), "-ac", "1",
                     "-c:a", "pcm_s16le", str(base) + ".wav"], check=True)
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(base) + ".wav", "-c:a", "libmp3lame", "-b:a", "192k",
