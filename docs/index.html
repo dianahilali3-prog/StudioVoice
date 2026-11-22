@@ -158,8 +158,9 @@ footer { color: var(--muted); font-size: 12px; text-align: center; display: grid
 
   <!-- Sign-in: free Puter account (email only, no card) -->
   <section class="card" id="setupCard" hidden aria-labelledby="lblSetup">
-    <div class="label" id="lblSetup">Connexion gratuite</div>
-    <p style="margin:0">Les voix naturelles (OpenAI, Google Gemini, ElevenLabs…) passent par <b>Puter</b>, un service gratuit : <b>aucune carte bancaire, aucune clé à copier</b>. Un compte gratuit (adresse e-mail) suffit et inclut un crédit offert chaque mois.</p>
+    <div class="label" id="lblSetup"><span>Voix naturelles : connexion gratuite</span><button class="btn btn-ghost" id="setupLater">Plus tard</button></div>
+    <p style="margin:0">Les voix OpenAI, Google Gemini, ElevenLabs… passent par <b>Puter</b> : juste une adresse e-mail, <b>aucune carte bancaire</b>, un crédit gratuit chaque mois. Si Puter te propose de payer, refuse : tu restes sur le gratuit.</p>
+    <p style="margin:0" class="hint">Les <b>voix de l'iPhone</b> fonctionnent sans aucun compte : choisis-les dans « Choisir une voix » › « iPhone ».</p>
     <ol class="steps">
       <li>Touche « Se connecter » : une fenêtre Puter s'ouvre.</li>
       <li>Crée ton compte gratuit (ou connecte-toi) et accepte.</li>
@@ -192,6 +193,7 @@ footer { color: var(--muted); font-size: 12px; text-align: center; display: grid
           </div>
           <div class="seg" role="group" aria-label="Moteur" id="engineSeg">
             <button data-v="" aria-pressed="true">Tous</button>
+            <button data-v="device" aria-pressed="false">iPhone (sans compte)</button>
             <button data-v="openai" aria-pressed="false">OpenAI</button>
             <button data-v="gemini" aria-pressed="false">Gemini</button>
             <button data-v="elevenlabs" aria-pressed="false">ElevenLabs</button>
@@ -199,7 +201,8 @@ footer { color: var(--muted); font-size: 12px; text-align: center; display: grid
           </div>
         </div>
         <label class="field"><span class="sr">Rechercher</span><input type="search" id="voiceSearch" placeholder="Rechercher une voix (prénom, style…)"></label>
-        <div class="hint">Toutes ces voix lisent le français et l'arabe (sauf mention « FR » ou « AR »). Touche ▶︎ pour écouter un extrait.</div>
+        <div class="hint">Touche ▶︎ pour écouter un extrait. Voix Puter : français et arabe (sauf mention FR / AR). Voix iPhone : sans compte, écoute uniquement.</div>
+        <div class="hint" id="deviceHint" hidden>Pour des voix iPhone plus naturelles, télécharge les voix « Premium » ou « Améliorée » (gratuit) : <b>Réglages › Accessibilité › Contenu énoncé › Voix</b> › Français (ex. Audrey, Thomas, Amélie) et Arabe (ex. Majed), puis recharge cette page.</div>
         <div class="voices" id="voiceGrid"></div>
       </div>
     </section>
@@ -274,6 +277,7 @@ footer { color: var(--muted); font-size: 12px; text-align: center; display: grid
     <section class="card" aria-live="polite">
       <button class="btn btn-primary" id="generate"><svg class="icon"><use href="#i-wave"/></svg><span id="genLabel">Générer</span></button>
       <div class="hint" id="costHint"></div>
+      <div id="nowReading" hidden style="font-size:16px;line-height:1.5;padding:12px 14px;border-radius:14px;background:var(--mist);unicode-bidi:plaintext" dir="auto"></div>
       <div id="progressBox" hidden>
         <div class="progress"><i id="bar"></i></div>
         <div class="status-line" id="statusLine" style="margin-top:8px"></div>
@@ -353,7 +357,7 @@ const P = () => MOCK ? window.__mockPuter : window.puter;
 
 // ---------------------------------------------------------------- Voice catalogue
 // lang: "multi" = reads French and Arabic; "fr" / "ar" = single language.
-const ENGINES = { openai: "OpenAI", gemini: "Google Gemini", elevenlabs: "ElevenLabs", xai: "xAI Grok", "aws-polly": "Amazon Polly" };
+const ENGINES = { device: "Voix de l'iPhone", openai: "OpenAI", gemini: "Google Gemini", elevenlabs: "ElevenLabs", xai: "xAI Grok", "aws-polly": "Amazon Polly" };
 const V = (provider, voice, name, gender, desc, extra = {}) => ({ id: `${provider}:${voice}`, provider, voice, name, gender, desc, lang: "multi", ...extra });
 const VOICES = [
   // OpenAI gpt-4o-mini-tts: most natural for narration, follows reading instructions
@@ -431,6 +435,27 @@ const VOICES = [
   V("aws-polly", "Zayd", "Zayd", "M", "Arabe du Golfe", { lang: "ar", engine: "neural", language: "ar-AE" })
 ];
 const voiceById = id => VOICES.find(v => v.id === id);
+// ---------------------------------------------------------------- Device voices (Web Speech API: free, no account, listen only)
+const FEMALE_NAMES = /amélie|amelie|audrey|aurélie|aurelie|marie|virginie|chantal|julie|céline|celine|hortense|laila|layla|mariam|maryam|hoda|salma|zeina|nora|sara|fatima|amira|google français|denise|eloise|vivienne|joséphine|josephine|brigitte|coralie|yvette|sylvie|charline|ariane/i;
+const deviceSupported = typeof speechSynthesis !== "undefined" && typeof SpeechSynthesisUtterance !== "undefined";
+function loadDeviceVoices() {
+  if (!deviceSupported) return;
+  const list = speechSynthesis.getVoices().filter(x => /^(fr|ar)/i.test(x.lang) && !/eloquence|grandma|grandpa|grand-m|grand-p|rocko|shelley|sandy|reed|flo\b|jacques/i.test(x.voiceURI + " " + x.name));
+  for (let i = VOICES.length - 1; i >= 0; i--) if (VOICES[i].provider === "device") VOICES.splice(i, 1);
+  const seen = new Set();
+  const mapped = list.map(x => {
+    const quality = /premium/i.test(x.voiceURI + x.name) ? 3 : /enhanced|améliorée|amelioree|neural|natural|online/i.test(x.voiceURI + x.name) ? 2 : 1;
+    const name = x.name.replace(/\s*\(.*?\)\s*/g, " ").replace(/Microsoft |Google |Apple /, "").replace(/ Online.*$/, "").trim() || x.name;
+    const lang = x.lang.toLowerCase().startsWith("ar") ? "ar" : "fr";
+    const region = x.lang.replace("_", "-");
+    const desc = (quality === 3 ? "Premium, très naturelle" : quality === 2 ? "Améliorée, naturelle" : "Standard") + " · " + region;
+    return V("device", x.voiceURI, name, FEMALE_NAMES.test(x.name) ? "F" : (/thomas|daniel|nicolas|majed|maged|tarik|henri|remy|rémy|jean|antoine|hamed|shakir|jamal|hamdan|ismael|hedi|rami|taim|moaz/i.test(x.name) ? "M" : "F"), desc, { lang, quality, reco: quality >= 2, region });
+  }).filter(v => { const k = v.voice; if (seen.has(k)) return false; seen.add(k); return true; })
+    .sort((a, b) => b.quality - a.quality || a.lang.localeCompare(b.lang) || a.name.localeCompare(b.name));
+  VOICES.unshift(...mapped);
+}
+const bestDevice = lang => VOICES.filter(v => v.provider === "device" && v.lang === lang).sort((a, b) => b.quality - a.quality)[0];
+const isDevice = v => v && v.provider === "device";
 const DEFAULT_VOICE = "openai:marin";
 const MAX_REQ = 1200; // characters per request: small parallel requests finish fastest
 
@@ -493,7 +518,7 @@ async function refreshCredit() {
 }
 function renderUsage() {
   const u = usage();
-  $("usageChipText").textContent = signedIn ? `Aujourd'hui ${fmtN(u.chars)} / ${fmtN(limits.day)}` : "Compte";
+  $("usageChipText").textContent = signedIn ? `Aujourd'hui ${fmtN(u.chars)} / ${fmtN(limits.day)}` : "Voix Puter : se connecter";
   $("mDay").textContent = `${fmtN(u.chars)} / ${fmtN(limits.day)} caractères`;
   $("mDayBar").style.width = Math.min(100, u.chars / limits.day * 100) + "%";
   $("dailyLimit").value = limits.day;
@@ -802,25 +827,28 @@ function renderVoice() {
   $("curInitial").textContent = v.name[0]; $("curFlag").textContent = langTag(v);
   $("curName").textContent = v.name;
   $("curLabel").textContent = `${v.gender === "M" ? "Homme" : "Femme"} · ${v.desc}`;
-  $("curDetail").textContent = `${ENGINES[v.provider]} · ${langText(v)}${v.premium ? " · Premium (consomme plus de crédit)" : ""}`;
+  $("curDetail").textContent = isDevice(v) ? "Voix de l'iPhone · sans compte, illimitée · écoute uniquement" : `${ENGINES[v.provider]} · ${langText(v)} · compte Puter gratuit${v.premium ? " · Premium (consomme plus de crédit)" : ""}`;
+  $("genLabel").textContent = isDevice(v) ? "Écouter le script" : (audio ? "Générer à nouveau" : "Générer");
+  $("deviceHint").hidden = !(isDevice(v) || ui.engine === "device");
   const instr = v.provider === "openai" || v.provider === "gemini";
   $("styleSel").disabled = !instr && v.provider !== "elevenlabs"; $("accentSel").disabled = !instr;
   renderGrid(); renderPreviewButtons(); renderCompanions(); updateCost();
 }
 function renderGrid() {
   const q = ui.q.trim().toLowerCase();
+  $("deviceHint").hidden = !(ui.engine === "device" || isDevice(voiceById(project.voice)));
   const list = VOICES.filter(v => (!ui.gender || v.gender === ui.gender)
     && (!ui.engine || (ui.engine === "other" ? ["xai", "aws-polly"].includes(v.provider) : v.provider === ui.engine))
     && (!q || (v.name + " " + v.desc + " " + ENGINES[v.provider]).toLowerCase().includes(q)));
-  list.sort((a, b) => (b.reco ? 1 : 0) - (a.reco ? 1 : 0));
+  list.sort((a, b) => (b.reco ? 1 : 0) - (a.reco ? 1 : 0) || (isDevice(b) ? 1 : 0) - (isDevice(a) ? 1 : 0));
   $("voiceGrid").innerHTML = list.length ? list.map(v => `
     <div class="vtile" role="button" tabindex="0" data-voice="${v.id}" aria-pressed="${v.id === project.voice}" aria-label="${esc(v.name + ", " + v.desc)}">
       ${avatarHTML(v)}
       <div class="txt"><div class="nm">${esc(v.name)}</div>
         <div class="sub">${v.gender === "M" ? "Homme" : "Femme"} · ${esc(v.desc)}</div>
-        <div><span class="tag">${esc(ENGINES[v.provider])}</span>${v.reco ? '<span class="tag">Narration</span>' : ""}${v.premium ? '<span class="tag">Premium</span>' : ""}${v.lang !== "multi" ? `<span class="tag">${v.lang.toUpperCase()}</span>` : ""}</div></div>
+        <div><span class="tag">${esc(ENGINES[v.provider])}</span>${v.reco ? '<span class="tag">Narration</span>' : ""}${v.premium ? '<span class="tag">Premium</span>' : ""}${isDevice(v) ? '<span class="tag">Sans compte</span>' : ""}${v.lang !== "multi" ? `<span class="tag">${v.lang.toUpperCase()}</span>` : ""}</div></div>
       <button class="round" data-preview="${v.id}" aria-label="Écouter ${esc(v.name)}"><svg class="icon"><use href="#i-play"/></svg></button>
-    </div>`).join("") : `<div class="hint">Aucune voix ne correspond à ces filtres.</div>`;
+    </div>`).join("") : `<div class="hint">${ui.engine === "device" ? "Aucune voix française ou arabe n'est installée dans ce navigateur. Sur iPhone : Réglages › Accessibilité › Contenu énoncé › Voix." : "Aucune voix ne correspond à ces filtres."}</div>`;
   $("voiceCount").textContent = `${VOICES.length} voix`;
   renderPreviewButtons();
 }
@@ -831,6 +859,7 @@ function renderCompanions() {
 }
 const billable = t => sentences(t).reduce((a, x) => a + x.text.length, 0);
 function updateCost() {
+  if (isDevice(voiceById(project.voice))) { $("costHint").textContent = project.script.trim() ? "Voix de l'iPhone : illimité et sans compte. Lecture à l'écoute uniquement (pas de fichier à télécharger)." : ""; return; }
   const n = billable(project.script), u = usage();
   $("costHint").textContent = n ? `Cette génération utilisera ${fmtN(n)} caractères · reste aujourd'hui : ${fmtN(Math.max(0, limits.day - u.chars))}` : "";
 }
@@ -884,6 +913,15 @@ function renderPreviewButtons() {
   $("curPreview").innerHTML = `<svg class="icon"><use href="${icon(project.voice)}"/></svg>`;
 }
 async function togglePreview(id) {
+  const dv = voiceById(id);
+  if (isDevice(dv)) {
+    speechSynthesis.cancel(); previewAudio.pause();
+    if (previewing === id) { previewing = null; renderPreviewButtons(); return; }
+    previewing = id; renderPreviewButtons();
+    speakDevice(previewText(dv), dv, DEFAULTS).then(() => { if (previewing === id) { previewing = null; renderPreviewButtons(); } });
+    return;
+  }
+  if (previewing && isDevice(voiceById(previewing))) speechSynthesis.cancel();
   if (previewing === id) { previewAudio.pause(); previewing = null; renderPreviewButtons(); return; }
   if (previewLoading) return;
   previewAudio.pause(); previewing = null; $("audio").pause();
@@ -912,13 +950,55 @@ let generating = false;
 const CONCURRENCY = 4;
 function clearAudio() {
   const a = $("audio"); a.pause(); if (audio && audio.url) URL.revokeObjectURL(audio.url); a.removeAttribute("src");
-  audio = null; $("playerCard").hidden = true; $("genLabel").textContent = "Générer";
+  audio = null; $("playerCard").hidden = true; $("genLabel").textContent = isDevice(voiceById(project.voice)) ? "Écouter le script" : "Générer";
+}
+function speakDevice(text, v, s) {
+  return new Promise(res => {
+    const u = new SpeechSynthesisUtterance(text);
+    const sv = speechSynthesis.getVoices().find(x => x.voiceURI === v.voice);
+    if (sv) { u.voice = sv; u.lang = sv.lang; } else u.lang = v.lang === "ar" ? "ar-SA" : "fr-FR";
+    u.rate = Math.min(2, Math.max(0.5, Number(s.speed) || 1));
+    u.pitch = Math.min(2, Math.max(0.1, Math.pow(2, (Number(s.pitch) || 0) / 12)));
+    let done = false; const end = () => { if (!done) { done = true; res(); } };
+    u.onend = end; u.onerror = end;
+    speechSynthesis.speak(u);
+  });
+}
+let deviceReading = null;
+function stopDevice() { if (deviceReading) deviceReading.stop = true; speechSynthesis.cancel(); }
+async function readWithDevice(text) {
+  const s = project.settings, main = voiceById(project.voice), items = sentences(text);
+  const session = deviceReading = { stop: false };
+  generating = true; $("genLabel").textContent = "Arrêter la lecture"; $("nowReading").hidden = false;
+  speechSynthesis.cancel();
+  try {
+    for (let i = 0; i < items.length && !session.stop; i++) {
+      const it = items[i], lang = detectLang(it.text) || main.lang;
+      let v = main;
+      if (lang !== main.lang) { const c = voiceById(lang === "ar" ? s.compAr : s.compFr); v = (s.autoLang && isDevice(c) && c.lang === lang) ? c : (s.autoLang ? bestDevice(lang) || main : main); }
+      showProgress(i / items.length, `Lecture : phrase ${i + 1} / ${items.length}`);
+      $("nowReading").textContent = it.text;
+      await speakDevice(it.text, v, s);
+      const pause = it.pause === "paragraph" ? s.pPara : 0;
+      if (pause && !session.stop) await sleep(pause * 1000 / s.speed);
+    }
+  } finally {
+    if (deviceReading === session) { deviceReading = null; generating = false; hideProgress(); $("nowReading").hidden = true; $("genLabel").textContent = "Écouter le script"; }
+  }
+}
+async function ensureSignedIn() {
+  if (signedIn) return true;
+  try { await P().auth.signIn(); signedIn = true; renderUsage(); refreshCredit(); showAccount(); return true; }
+  catch { $("setupCard").hidden = false; $("setupCard").scrollIntoView({ behavior: "smooth" }); return false; }
 }
 async function generate() {
+  if (deviceReading) { stopDevice(); return; }
   if (generating) { cancelFlag = true; return; }
   showError("");
   const text = project.script;
   if (!SPEAKABLE.test(text)) { showError("Écris ou colle d'abord ton script."); return; }
+  if (isDevice(voiceById(project.voice))) { previewAudio.pause(); readWithDevice(text); return; }
+  if (!(await ensureSignedIn())) return;
   const need = billable(text);
   const q = checkQuota(need); if (q) { showError(q); return; }
   const s = project.settings;
@@ -1006,26 +1086,30 @@ async function connect() {
   $("connectBtn").disabled = true; $("connectBtn").textContent = "Connexion…";
   try {
     await P().auth.signIn();
-    signedIn = true; showStudio();
+    signedIn = true; $("setupCard").hidden = true; renderUsage(); refreshCredit(); showAccount();
   } catch (e) {
     $("setupError").hidden = false;
     $("setupError").textContent = "Connexion non terminée. Autorise les fenêtres pop-up pour ce site, puis réessaie." + (e && e.error === "unsupported_origin" ? " (Ouvre le site via son adresse https.)" : "");
   } finally { $("connectBtn").disabled = false; $("connectBtn").textContent = "Se connecter gratuitement"; }
 }
-function showSetup() { $("setupCard").hidden = false; $("studio").hidden = true; $("settingsCard").hidden = true; renderUsage(); }
-async function showStudio() {
+function showSetup() { $("setupCard").hidden = false; $("settingsCard").hidden = true; renderUsage(); $("setupCard").scrollIntoView({ behavior: "smooth" }); }
+async function showAccount() {
+  try { const u = await P().auth.getUser(); $("accountName").textContent = u && u.username ? "Connectée en tant que " + u.username : ""; } catch { /* optional */ }
+}
+function showStudio() {
   $("setupCard").hidden = true; $("studio").hidden = false;
   setPressed("genderSeg", ui.gender); setPressed("engineSeg", ui.engine);
-  loadProjectIntoUI(); renderUsage(); refreshCredit();
-  try { const u = await P().auth.getUser(); $("accountName").textContent = u && u.username ? "Connectée en tant que " + u.username : ""; } catch { /* optional */ }
+  loadProjectIntoUI(); renderUsage();
+  if (signedIn) { refreshCredit(); showAccount(); }
 }
 
 // ---------------------------------------------------------------- Events
 $("connectBtn").onclick = connect;
+$("setupLater").onclick = () => { $("setupCard").hidden = true; };
 $("usageChip").onclick = () => { if (!signedIn) { showSetup(); return; } const s = $("settingsCard"); s.hidden = !s.hidden; renderUsage(); refreshCredit(); if (!s.hidden) s.scrollIntoView({ behavior: "smooth" }); };
 $("closeSettings").onclick = () => { $("settingsCard").hidden = true; };
 $("dailyLimit").onchange = e => { limits.day = Math.max(500, Number(e.target.value) || 10000); store.set("dvs.limits3", limits); renderUsage(); updateCost(); };
-$("signOut").onclick = async () => { try { await P().auth.signOut(); } catch { /* ignore */ } signedIn = false; showSetup(); };
+$("signOut").onclick = async () => { try { await P().auth.signOut(); } catch { /* ignore */ } signedIn = false; $("settingsCard").hidden = true; renderUsage(); };
 $("script").addEventListener("input", e => { project.script = e.target.value; renderStats(); scheduleSave(); });
 $("title").addEventListener("input", e => { project.title = e.target.value; scheduleSave(); });
 $("clearScript").onclick = () => { project.script = ""; $("script").value = ""; renderStats(); scheduleSave(); $("script").focus(); };
@@ -1083,10 +1167,14 @@ window.addEventListener("pagehide", saveProject);
 aacSupported().then(ok => { aacOK = ok; $("dlM4a").disabled = !ok; if (!ok) $("dlM4a").querySelector("small").textContent = "non disponible sur ce navigateur"; });
 renderUsage();
 (async () => {
-  for (let i = 0; i < 50 && !P(); i++) await sleep(100);
-  if (!P()) { showSetup(); $("setupError").hidden = false; $("setupError").textContent = "Le service de voix n'a pas pu se charger. Vérifie ta connexion puis recharge la page."; return; }
-  try { signedIn = !!P().auth.isSignedIn(); } catch { signedIn = false; }
-  if (signedIn) showStudio(); else showSetup();
+  loadDeviceVoices();
+  if (deviceSupported) speechSynthesis.onvoiceschanged = () => { loadDeviceVoices(); if (!$("studio").hidden) { renderGrid(); renderCompanions(); } };
+  for (let i = 0; i < 30 && !P(); i++) await sleep(100);
+  try { signedIn = !!(P() && P().auth.isSignedIn()); } catch { signedIn = false; }
+  // Without an account, start on the best iPhone voice (free, unlimited).
+  if (!signedIn && !isDevice(voiceById(project.voice)) && !project.script.trim()) { const d = bestDevice("fr"); if (d) project.voice = d.id; }
+  showStudio();
+  if (!P()) showError("Les voix Puter n'ont pas pu se charger (connexion ?). Les voix de l'iPhone restent disponibles.");
 })();
 </script>
 </body>

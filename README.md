@@ -257,6 +257,10 @@ y compris l'inférence réelle, à chaque push.
   levantin, Golfe), transmis aux voix OpenAI et Gemini.
 - Génération rapide : requêtes de 1 200 caractères envoyées 4 par 4 en parallèle.
 - Vitesse et hauteur réglables, téléchargement direct en MP3, WAV et M4A, projets sauvegardés.
+- **Voix de l'iPhone sans aucun compte** : les voix françaises et arabes installées sur l'appareil
+  (Premium / Améliorée de préférence) lisent le script en illimité, à l'écoute uniquement (le navigateur
+  ne permet pas d'enregistrer ces voix en fichier). Le studio s'ouvre directement sur ces voix ; la
+  connexion Puter n'est demandée qu'en choisissant une voix Puter.
 
 **Activer le site (une fois)** : GitHub › dépôt StudioVoice › *Settings* › *Pages* ›
 *Build and deployment* › Source *Deploy from a branch* › branche `claude/diana-voice-studio-ios-4v4ay9`,
