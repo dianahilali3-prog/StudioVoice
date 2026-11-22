@@ -1,0 +1,135 @@
+# DianaVoiceStudio · génération de voix off open source (Chatterbox Multilingual, MIT)
+# Gratuit et illimité pour un dépôt public : aucune clé, aucune carte bancaire.
+#
+# Déclenchement : ajoute (ou modifie) un fichier texte dans le dossier `demandes/`
+# (le studio en ligne prépare ce fichier pour toi). Le script est découpé et
+# généré en parallèle sur plusieurs machines, puis publié comme « Release »
+# avec un MP3 et un WAV téléchargeables.
+name: Voix off (Chatterbox)
+
+on:
+  push:
+    paths:
+      - "demandes/**.txt"
+  workflow_dispatch:
+    inputs:
+      demande:
+        description: "Chemin de la demande (ex. demandes/exemple.txt)"
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: voix-off-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: false
+
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  HF_HUB_DISABLE_TELEMETRY: "1"
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      parts: ${{ steps.plan.outputs.parts }}
+      request: ${{ steps.find.outputs.request }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Trouver la demande
+        id: find
+        env:
+          INPUT_REQUEST: ${{ github.event.inputs.demande }}
+          BEFORE: ${{ github.event.before }}
+        run: |
+          if [ -n "$INPUT_REQUEST" ]; then
+            REQ="$INPUT_REQUEST"
+          else
+            REQ=$(git diff --name-only --diff-filter=AM "${BEFORE:-HEAD~1}" HEAD -- 'demandes/*.txt' 2>/dev/null | tail -n 1)
+            [ -z "$REQ" ] && REQ=$(git diff --name-only --diff-filter=AM HEAD~1 HEAD -- 'demandes/*.txt' | tail -n 1)
+          fi
+          if [ -z "$REQ" ] || [ ! -f "$REQ" ]; then echo "Aucune demande trouvée"; exit 1; fi
+          echo "request=$REQ" >> "$GITHUB_OUTPUT"
+          echo "Demande : $REQ"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Préparer le découpage
+        id: plan
+        env:
+          REQ: ${{ steps.find.outputs.request }}
+        run: |
+          python voixoff/generate.py plan --request "$REQ" --parts 20 --out plan.json | tee plan-summary.json
+          echo "parts=$(python -c 'import json;print(json.dumps(list(range(json.load(open("plan.json"))["parts"]))))')" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: plan
+          path: plan.json
+
+  synth:
+    needs: plan
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      max-parallel: 20
+      matrix:
+        part: ${{ fromJSON(needs.plan.outputs.parts) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: voixoff/requirements.txt
+      - name: Cache du modèle Chatterbox
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: chatterbox-mtl-v2
+      - name: Installer
+        run: |
+          sudo apt-get install -y -qq ffmpeg > /dev/null
+          pip install -q -r voixoff/requirements.txt
+      - uses: actions/download-artifact@v4
+        with:
+          name: plan
+      - name: Générer la partie ${{ matrix.part }}
+        run: python voixoff/generate.py synth --plan plan.json --part ${{ matrix.part }} --out parts
+      - uses: actions/upload-artifact@v4
+        with:
+          name: part-${{ matrix.part }}
+          path: parts/*.wav
+          retention-days: 1
+
+  merge:
+    needs: [plan, synth]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Installer
+        run: |
+          sudo apt-get install -y -qq ffmpeg > /dev/null
+          pip install -q numpy soundfile
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Assembler (pauses, fondus, volume, vitesse)
+        run: python voixoff/generate.py merge --plan artifacts/plan/plan.json --parts-dir artifacts --out sortie
+      - name: Publier la voix off
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REQ: ${{ needs.plan.outputs.request }}
+        run: |
+          TAG="voix-$(date -u +%Y%m%d-%H%M%S)-${GITHUB_RUN_ID}"
+          TITLE=$(python -c 'import json;i=json.load(open("sortie/info.json"));print((i["title"] or "Voix off")[:80])')
+          NOTES=$(python -c 'import json;i=json.load(open("sortie/info.json"));m,s=divmod(int(i["duration"]),60);print(f"Voix : {i[\"voice\"]} · durée {m}:{s:02d} · {i[\"characters\"]} caractères")')
+          gh release create "$TAG" sortie/*.mp3 sortie/*.wav sortie/info.json \
+            --target "$GITHUB_SHA" --title "🎙️ $TITLE" --notes "$NOTES (demande : $REQ)" --prerelease
+          echo "### 🎙️ Voix off prête" >> "$GITHUB_STEP_SUMMARY"
+          echo "$NOTES" >> "$GITHUB_STEP_SUMMARY"
+          echo "https://github.com/${GITHUB_REPOSITORY}/releases/tag/$TAG" >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,7 @@
+voix: clara
+vitesse: 1.1
+emotion: 0.6
+titre: Test DianaVoiceStudio
+---
+Bonjour à toutes et à tous ! Aujourd'hui, M. Dupont nous explique comment créer une vidéo qui captive.
+مرحبا بكم في هذه الحلقة الجديدة.
