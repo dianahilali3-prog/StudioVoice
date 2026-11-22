@@ -1,0 +1,1031 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DianaVoiceStudio</title>
+<meta name="description" content="Studio de voix off français et arabe aux voix naturelles.">
+<meta name="theme-color" content="#0b0a0c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="DianaVoice">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: one centred studio column (max 760px) of quiet cards; pink is reserved for actions that make sound. */
+:root {
+  --bg: #fbf5f7; --surface: #ffffff; --raised: #f6eef1; --ink: #141215; --muted: #7d7a83; --line: #e8dde2;
+  --rose: #eaa3b8; --rose-2: #d77c98; --rose-ink: #a8365c; --mist: #fbe6ed; --silver-2: #b3b5bd;
+  --metal-1: #6f717a; --metal-2: #b9bbc3; --on-rose: #18110f; --danger: #b4233c; --ok: #2f7d57;
+  --font-display: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+  --font-body: "Manrope", -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --radius: 22px; color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b0a0c; --surface: #161418; --raised: #1f1c21; --ink: #f6eff2; --muted: #a6a3ac; --line: #2c282e;
+    --rose: #f0b2c4; --rose-2: #e48fa9; --rose-ink: #f5a6be; --mist: #2a1820; --silver-2: #8d8e97;
+    --metal-1: #9a9ca5; --metal-2: #eceef2; --on-rose: #16100f; --danger: #ff7d91; --ok: #7fd3a6; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0b0a0c; --surface: #161418; --raised: #1f1c21; --ink: #f6eff2; --muted: #a6a3ac; --line: #2c282e;
+  --rose: #f0b2c4; --rose-2: #e48fa9; --rose-ink: #f5a6be; --mist: #2a1820; --silver-2: #8d8e97;
+  --metal-1: #9a9ca5; --metal-2: #eceef2; --on-rose: #16100f; --danger: #ff7d91; --ok: #7fd3a6; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.5; -webkit-text-size-adjust: 100%; }
+.wrap { max-width: 760px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-top: calc(env(safe-area-inset-top, 0px) + 18px); padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 40px); display: grid; gap: 16px; }
+header.top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.wordmark { font-family: var(--font-display); font-weight: 600; font-size: 34px; line-height: 1; margin: 0; }
+.wordmark .d { color: var(--rose-2); font-style: italic; }
+.wordmark .s { background: linear-gradient(120deg, var(--metal-1), var(--metal-2) 45%, var(--metal-1)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.tagline { color: var(--muted); font-size: 13px; margin: 6px 0 0; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 6px 11px; border-radius: 999px; background: var(--mist); color: var(--rose-ink); border: 1px solid var(--line); white-space: nowrap; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; display: grid; gap: 14px; min-width: 0; }
+.label { font-size: 11px; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.grow { flex: 1 1 auto; min-width: 0; }
+button, select, input, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--rose-2); outline-offset: 2px; }
+.btn { border: 0; border-radius: 18px; min-height: 56px; padding: 0 20px; font-weight: 700; font-size: 16px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; transition: transform .12s ease, opacity .2s; width: 100%; text-decoration: none; }
+.btn:active { transform: scale(0.98); }
+.btn:disabled, .btn[aria-disabled="true"] { opacity: .45; cursor: default; transform: none; pointer-events: none; }
+.btn-primary { background: linear-gradient(135deg, #f6c6d3, #e89ab0 55%, #d77c98); color: var(--on-rose); box-shadow: 0 8px 22px -10px var(--rose-2); }
+.btn-dark { background: linear-gradient(180deg, #232126, #070608); color: #fff; border: 1px solid var(--silver-2); }
+.btn-ghost { background: var(--raised); border: 1px solid var(--line); min-height: 42px; font-size: 14px; font-weight: 600; border-radius: 999px; width: auto; padding: 0 16px; color: var(--ink); }
+.icon { width: 18px; height: 18px; flex: none; }
+.avatar { width: 54px; height: 54px; border-radius: 50%; display: grid; place-items: center; font-family: var(--font-display); font-size: 25px; font-weight: 600; flex: none; position: relative; border: 1.5px solid var(--silver-2); }
+.avatar.f { background: linear-gradient(135deg, #f6c6d3, #d77c98); color: var(--on-rose); }
+.avatar.m { background: linear-gradient(180deg, #2a272c, #070608); color: #fff; }
+.avatar .flag { position: absolute; right: -4px; bottom: -4px; font-size: 15px; font-family: var(--font-body); }
+.vname { font-size: 20px; font-weight: 700; }
+.vlabel { color: var(--rose-ink); font-weight: 600; font-size: 14px; }
+.vdetail { color: var(--muted); font-size: 12px; }
+.round { width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--silver-2); background: var(--raised); display: grid; place-items: center; flex: none; color: var(--ink); }
+.round.big { width: 72px; height: 72px; background: linear-gradient(135deg, #f6c6d3, #e89ab0 55%, #d77c98); color: var(--on-rose); border-color: transparent; box-shadow: 0 8px 22px -10px var(--rose-2); }
+.round.big .icon { width: 28px; height: 28px; }
+.seg { display: inline-flex; background: var(--raised); border: 1px solid var(--line); border-radius: 12px; padding: 3px; gap: 3px; flex-wrap: wrap; }
+.seg button { border: 0; background: transparent; padding: 7px 12px; border-radius: 9px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+.voices { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; max-height: 70vh; overflow-y: auto; padding: 2px; }
+.vtile { border: 1px solid var(--line); background: var(--raised); border-radius: 18px; padding: 11px 12px; display: flex; gap: 10px; align-items: center; min-width: 0; cursor: pointer; }
+.vtile[aria-pressed="true"] { border: 2px solid var(--rose-2); background: var(--mist); padding: 10px 11px; }
+.vtile .avatar { width: 42px; height: 42px; font-size: 20px; }
+.vtile .avatar .flag { font-size: 12px; }
+.vtile .txt { flex: 1 1 auto; min-width: 0; }
+.vtile .nm { font-weight: 700; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vtile .sub { color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .3px; padding: 1px 6px; border-radius: 6px; background: var(--surface); border: 1px solid var(--line); color: var(--rose-ink); margin-right: 3px; }
+.vtile .round { width: 36px; height: 36px; }
+textarea { width: 100%; min-height: 240px; max-height: 60vh; resize: vertical; border: 1px solid var(--line); background: var(--raised); color: var(--ink); border-radius: 16px; padding: 14px; font: 17px/1.6 var(--font-body); unicode-bidi: plaintext; }
+input[type=text], input[type=password], input[type=number], input[type=search], select { width: 100%; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 14px; padding: 11px 14px; font-size: 16px; min-width: 0; }
+.field { display: grid; gap: 6px; }
+.field > span { font-weight: 600; font-size: 14px; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.stat b { display: block; font-size: 15px; font-variant-numeric: tabular-nums; }
+.stat span { color: var(--muted); font-size: 12px; }
+.slider { display: grid; gap: 6px; }
+.slider .head { display: flex; justify-content: space-between; font-weight: 600; font-size: 14px; }
+.slider .val { color: var(--rose-ink); font-family: var(--font-mono); font-size: 13px; }
+.slider .ends { display: flex; justify-content: space-between; color: var(--muted); font-size: 11px; }
+input[type=range] { width: 100%; accent-color: var(--rose-2); }
+details summary { cursor: pointer; font-weight: 600; font-size: 14px; }
+details[open] summary { margin-bottom: 12px; }
+.adv { display: grid; gap: 14px; }
+.toggle { display: flex; gap: 12px; align-items: flex-start; }
+.toggle input { width: 20px; height: 20px; accent-color: var(--rose-2); margin-top: 2px; flex: none; }
+.hint { color: var(--muted); font-size: 12px; }
+.progress { height: 8px; border-radius: 99px; background: var(--raised); overflow: hidden; border: 1px solid var(--line); }
+.progress > i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #f6c6d3, #d77c98); transition: width .25s ease; }
+.status-line { font-family: var(--font-mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.error { color: var(--danger); font-size: 14px; }
+.okmsg { color: var(--ok); font-size: 14px; }
+canvas.wave { width: 100%; height: 72px; display: block; cursor: pointer; touch-action: none; }
+.times { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+.controls { display: flex; justify-content: center; align-items: center; gap: 26px; }
+.dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+.dl .btn { min-height: 64px; flex-direction: column; gap: 2px; font-size: 15px; }
+.dl .btn small { font-weight: 500; font-size: 11px; opacity: .75; }
+.projects { display: grid; gap: 8px; min-width: 0; }
+.proj { display: flex; gap: 12px; align-items: center; border: 1px solid var(--line); background: var(--raised); border-radius: 16px; padding: 10px 12px; min-width: 0; overflow: hidden; }
+.proj .open { flex: 1 1 auto; min-width: 0; text-align: left; border: 0; background: transparent; padding: 0; }
+.proj .t { font-weight: 700; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.proj .e { color: var(--muted); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.proj .del { border: 0; background: transparent; color: var(--muted); width: 36px; height: 36px; border-radius: 50%; flex: none; }
+.proj[aria-current="true"] { border-color: var(--rose-2); background: var(--mist); }
+.meter { display: grid; gap: 6px; }
+.meter .bar { height: 6px; border-radius: 99px; background: var(--raised); border: 1px solid var(--line); overflow: hidden; }
+.meter .bar i { display: block; height: 100%; background: linear-gradient(90deg, #f6c6d3, #d77c98); }
+.meter .txt { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+ol.steps { margin: 0; padding-left: 20px; display: grid; gap: 8px; }
+ol.steps a, .card a { color: var(--rose-ink); font-weight: 600; }
+footer { color: var(--muted); font-size: 12px; text-align: center; display: grid; gap: 4px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-play" viewBox="0 0 24 24"><path fill="currentColor" d="M8 5.5v13a1 1 0 0 0 1.5.86l10.4-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path fill="currentColor" d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></symbol>
+  <symbol id="i-stop" viewBox="0 0 24 24"><rect fill="currentColor" x="6.5" y="6.5" width="11" height="11" rx="2"/></symbol>
+  <symbol id="i-load" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 3a9 9 0 1 0 9 9"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="0.9s" repeatCount="indefinite"/></path></symbol>
+  <symbol id="i-back" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4h4"/><text x="12" y="15.5" font-size="7" font-weight="700" text-anchor="middle" fill="currentColor" font-family="sans-serif">10</text></symbol>
+  <symbol id="i-fwd" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M20 12a8 8 0 1 1-2.3-5.6M20 4v4h-4"/><text x="12" y="15.5" font-size="7" font-weight="700" text-anchor="middle" fill="currentColor" font-family="sans-serif">10</text></symbol>
+  <symbol id="i-wave" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M3 12h1M7 8v8M11 4v16M15 7v10M19 10v4M22 12h-1"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19.5h14"/></symbol>
+  <symbol id="i-people" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM2.5 20c.8-3.4 3.4-5.5 6.5-5.5s5.7 2.1 6.5 5.5M16.5 4.5a3.5 3.5 0 0 1 0 6.5M18.5 14.8c1.6.9 2.6 2.6 3 5.2"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></symbol>
+</svg>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1 class="wordmark"><span class="d">Diana</span>Voice<span class="s">Studio</span></h1>
+      <p class="tagline">Voix off naturelles en français et en arabe · narration, conversation, contenu</p>
+    </div>
+    <button class="chip" id="usageChip" aria-label="Quota et réglages"><svg class="icon" style="width:14px;height:14px"><use href="#i-gear"/></svg><span id="usageChipText">Réglages</span></button>
+  </header>
+
+  <!-- Onboarding: connect the free Azure Speech key -->
+  <section class="card" id="setupCard" hidden aria-labelledby="lblSetup">
+    <div class="label" id="lblSetup">Connexion des voix naturelles</div>
+    <p style="margin:0">Les voix viennent du service <b>Azure AI Speech</b> de Microsoft : palier gratuit de <b>500 000 caractères par mois</b> (environ 9 h d'audio). À faire une seule fois :</p>
+    <ol class="steps">
+      <li>Crée un compte gratuit sur <a href="https://azure.microsoft.com/free/" target="_blank" rel="noopener">azure.microsoft.com/free</a>.</li>
+      <li>Ouvre <a href="https://portal.azure.com/#create/Microsoft.CognitiveServicesSpeechServices" target="_blank" rel="noopener">Créer une ressource Speech</a>. Région : <b>West Europe</b> (ou France Central). Niveau tarifaire : <b>Free F0</b>. Puis « Vérifier + créer ».</li>
+      <li>Dans la ressource, ouvre <b>Clés et point de terminaison</b> et copie la <b>Clé 1</b> et la <b>Région</b>.</li>
+      <li>Colle-les ci-dessous. La clé reste uniquement dans ce navigateur.</li>
+    </ol>
+    <div class="grid2">
+      <label class="field"><span>Clé Azure Speech</span><input type="password" id="keyInput" autocomplete="off" spellcheck="false" placeholder="ex. 3f2a…"></label>
+      <label class="field"><span>Région</span>
+        <select id="regionInput">
+          <option value="westeurope">West Europe (Pays-Bas)</option>
+          <option value="francecentral">France Central (Paris)</option>
+          <option value="northeurope">North Europe (Irlande)</option>
+          <option value="switzerlandnorth">Switzerland North</option>
+          <option value="uksouth">UK South</option>
+          <option value="germanywestcentral">Germany West Central</option>
+          <option value="uaenorth">UAE North (Dubaï)</option>
+          <option value="eastus">East US</option>
+          <option value="westus2">West US 2</option>
+          <option value="canadacentral">Canada Central</option>
+          <option value="southeastasia">Southeast Asia</option>
+          <option value="centralindia">Central India</option>
+        </select>
+      </label>
+    </div>
+    <button class="btn btn-primary" id="connectBtn">Connecter les voix</button>
+    <div class="error" id="setupError" hidden></div>
+  </section>
+
+  <div id="studio" hidden style="display:grid;gap:16px">
+    <section class="card" aria-labelledby="lblVoice">
+      <div class="label" id="lblVoice"><span>Voix</span><span id="voiceCount"></span></div>
+      <div class="row" style="flex-wrap:nowrap">
+        <div class="avatar f" id="curAvatar"><span id="curInitial">?</span><span class="flag" id="curFlag"></span></div>
+        <div class="grow">
+          <div class="vname" id="curName">—</div>
+          <div class="vlabel" id="curLabel"></div>
+          <div class="vdetail" id="curDetail"></div>
+        </div>
+        <button class="round" id="curPreview" aria-label="Écouter un extrait"><svg class="icon"><use href="#i-play"/></svg></button>
+      </div>
+      <button class="btn btn-dark" id="togglePicker" aria-expanded="false"><svg class="icon"><use href="#i-people"/></svg>Choisir une voix</button>
+      <div id="picker" hidden style="display:grid;gap:12px">
+        <div class="row">
+          <div class="seg" role="group" aria-label="Langue" id="langSeg">
+            <button data-v="fr" aria-pressed="true">🇫🇷 Français</button>
+            <button data-v="ar" aria-pressed="false">🇸🇦 Arabe</button>
+            <button data-v="" aria-pressed="false">Toutes</button>
+          </div>
+          <div class="seg" role="group" aria-label="Genre" id="genderSeg">
+            <button data-v="" aria-pressed="true">Toutes</button>
+            <button data-v="Female" aria-pressed="false">Femmes</button>
+            <button data-v="Male" aria-pressed="false">Hommes</button>
+          </div>
+        </div>
+        <div class="grid2">
+          <label class="field"><span class="sr">Région / accent</span><select id="localeFilter"></select></label>
+          <label class="field"><span class="sr">Rechercher</span><input type="search" id="voiceSearch" placeholder="Rechercher un prénom…"></label>
+        </div>
+        <label class="toggle"><input type="checkbox" id="recoOnly" checked><span><b>Recommandées pour la narration</b> <span class="hint">· décoche pour voir toutes les voix</span></span></label>
+        <div class="voices" id="voiceGrid"></div>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="lblScript">
+      <div class="label" id="lblScript"><span>Script</span><button class="btn btn-ghost" id="newProject"><svg class="icon"><use href="#i-plus"/></svg>Nouveau projet</button></div>
+      <label class="sr" for="title">Titre du projet</label>
+      <input type="text" id="title" placeholder="Titre du projet (facultatif)" autocomplete="off">
+      <label class="sr" for="script">Script</label>
+      <textarea id="script" dir="auto" placeholder="Colle ou écris ton script ici. Chaque retour à la ligne crée une pause de paragraphe."></textarea>
+      <div class="row"><button class="btn btn-ghost" id="insertPause">+ pause</button><button class="btn btn-ghost" id="clearScript">Effacer</button></div>
+      <div class="stats">
+        <div class="stat"><b id="stChars">0</b><span>caractères</span></div>
+        <div class="stat"><b id="stWords">0</b><span>mots</span></div>
+        <div class="stat"><b id="stDur">≈ 0:00</b><span>durée estimée</span></div>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="lblPros">
+      <div class="label" id="lblPros">Interprétation</div>
+      <label class="field" id="styleField" hidden><span>Style de lecture</span><select id="styleSel"></select></label>
+      <div class="slider">
+        <div class="head"><label for="speed">Vitesse</label><span class="val" id="speedVal">1.00×</span></div>
+        <input type="range" id="speed" min="0.5" max="2" step="0.05" value="1">
+        <div class="ends"><span>0,5×</span><span>2×</span></div>
+      </div>
+      <div class="slider">
+        <div class="head"><label for="pitch">Hauteur</label><span class="val" id="pitchVal">Naturelle</span></div>
+        <input type="range" id="pitch" min="-6" max="6" step="0.5" value="0">
+        <div class="ends"><span>Plus grave</span><span>Plus aiguë</span></div>
+      </div>
+      <details>
+        <summary>Réglages avancés</summary>
+        <div class="adv">
+          <label class="field"><span>Pause entre les phrases</span>
+            <select id="sentPause"><option value="">Naturelle</option><option value="150">Courte (0,15 s)</option><option value="350">Moyenne (0,35 s)</option><option value="700">Longue (0,7 s)</option></select></label>
+          <div class="slider">
+            <div class="head"><label for="pPara">Pause entre paragraphes</label><span class="val" id="pParaVal">0.7 s</span></div>
+            <input type="range" id="pPara" min="0" max="3" step="0.1" value="0.7">
+          </div>
+          <label class="toggle"><input type="checkbox" id="autoLang" checked><span><b>Bilingue automatique FR / AR</b><br><span class="hint">Les passages dans l'autre langue sont lus par la voix associée ci-dessous (ou par la même voix si elle est multilingue).</span></span></label>
+          <div class="grid2">
+            <label class="field"><span>Voix associée pour l'arabe</span><select id="compAr"></select></label>
+            <label class="field"><span>Voix associée pour le français</span><select id="compFr"></select></label>
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <section class="card" aria-live="polite">
+      <button class="btn btn-primary" id="generate"><svg class="icon"><use href="#i-wave"/></svg><span id="genLabel">Générer</span></button>
+      <div class="hint" id="costHint"></div>
+      <div id="progressBox" hidden>
+        <div class="progress"><i id="bar"></i></div>
+        <div class="status-line" id="statusLine" style="margin-top:8px"></div>
+      </div>
+      <div class="error" id="errorBox" hidden></div>
+    </section>
+
+    <section class="card" id="playerCard" hidden aria-labelledby="lblPlay">
+      <div class="label" id="lblPlay"><span>Écouter</span><span id="audioDur"></span></div>
+      <canvas class="wave" id="wave" aria-label="Forme d'onde, touche pour te déplacer"></canvas>
+      <div class="times"><span id="tCur">0:00</span><span id="tLeft">-0:00</span></div>
+      <div class="controls">
+        <button class="round" id="back10" aria-label="Reculer de 10 secondes"><svg class="icon"><use href="#i-back"/></svg></button>
+        <button class="round big" id="playPause" aria-label="Écouter"><svg class="icon"><use href="#i-play" id="ppIcon"/></svg></button>
+        <button class="round" id="fwd10" aria-label="Avancer de 10 secondes"><svg class="icon"><use href="#i-fwd"/></svg></button>
+      </div>
+      <div class="label"><span>Télécharger</span></div>
+      <div class="dl">
+        <button class="btn btn-primary" id="dlMp3"><span><svg class="icon"><use href="#i-down"/></svg> MP3</span><small>léger · universel</small></button>
+        <button class="btn btn-dark" id="dlWav"><span><svg class="icon"><use href="#i-down"/></svg> WAV</span><small>qualité maximale</small></button>
+        <button class="btn btn-dark" id="dlM4a"><span><svg class="icon"><use href="#i-down"/></svg> M4A</span><small>AAC · Apple</small></button>
+      </div>
+      <div class="hint" id="dlStatus"></div>
+      <audio id="audio" preload="auto" playsinline></audio>
+    </section>
+
+    <section class="card" aria-labelledby="lblLib">
+      <div class="label" id="lblLib">Mes projets</div>
+      <div class="projects" id="projects"></div>
+      <div class="hint">Enregistrés automatiquement dans ce navigateur.</div>
+    </section>
+  </div>
+
+  <section class="card" id="settingsCard" hidden aria-labelledby="lblSettings">
+    <div class="label" id="lblSettings"><span>Quota et réglages</span><button class="btn btn-ghost" id="closeSettings">Fermer</button></div>
+    <div class="meter">
+      <div class="txt"><span>Aujourd'hui</span><span id="mDay"></span></div>
+      <div class="bar"><i id="mDayBar"></i></div>
+    </div>
+    <div class="meter">
+      <div class="txt"><span>Ce mois-ci (palier gratuit)</span><span id="mMonth"></span></div>
+      <div class="bar"><i id="mMonthBar"></i></div>
+    </div>
+    <div class="grid2">
+      <label class="field"><span>Quota par jour (caractères)</span><input type="number" id="dailyLimit" min="1000" step="1000" inputmode="numeric"></label>
+      <label class="field"><span>Quota par mois (caractères)</span><input type="number" id="monthlyLimit" min="1000" step="10000" inputmode="numeric"></label>
+    </div>
+    <div class="hint">Le palier gratuit Azure (F0) offre 500 000 caractères par mois. Le quota quotidien répartit ce volume (≈ 16 000 caractères ≈ 18 min d'audio par jour). Les extraits d'écoute sont mis en cache et ne sont comptés qu'une fois.</div>
+    <div class="row">
+      <button class="btn btn-ghost" id="changeKey">Changer de clé Azure</button>
+      <button class="btn btn-ghost" id="forgetKey" style="color:var(--danger)">Supprimer la clé de ce navigateur</button>
+    </div>
+  </section>
+
+  <footer>
+    <span>Voix neuronales Microsoft Azure AI Speech · ton script est envoyé uniquement à Azure, avec ta propre clé.</span>
+    <span>DianaVoiceStudio · gratuit, sans abonnement.</span>
+  </footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mp4-muxer@5.1.3/build/mp4-muxer.js"></script>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const SR = 44100;
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch { return false; } },
+  del(k) { try { localStorage.removeItem(k); } catch { /* ignore */ } }
+};
+const params = new URLSearchParams(location.search);
+// Test hook: ?endpoint=http://127.0.0.1:8766 points the app at a mock Azure server.
+const ENDPOINT_OVERRIDE = params.get("endpoint");
+const nextFrame = () => new Promise(r => setTimeout(r, 0));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&apos;" }[c]));
+
+// ---------------------------------------------------------------- Azure account
+let cfg = store.get("dvs.azure", null); // { key, region }
+const base = () => ENDPOINT_OVERRIDE || `https://${cfg.region}.tts.speech.microsoft.com`;
+
+// ---------------------------------------------------------------- Voice catalog (live list from Azure)
+const LOCALES = {
+  "fr-FR": "France", "fr-CA": "Canada", "fr-BE": "Belgique", "fr-CH": "Suisse",
+  "ar-SA": "Arabie saoudite", "ar-EG": "Égypte", "ar-MA": "Maroc", "ar-DZ": "Algérie", "ar-TN": "Tunisie", "ar-AE": "Émirats",
+  "ar-LB": "Liban", "ar-JO": "Jordanie", "ar-KW": "Koweït", "ar-QA": "Qatar", "ar-BH": "Bahreïn", "ar-OM": "Oman",
+  "ar-YE": "Yémen", "ar-SY": "Syrie", "ar-IQ": "Irak", "ar-LY": "Libye"
+};
+const FLAGS = { FR: "🇫🇷", CA: "🇨🇦", BE: "🇧🇪", CH: "🇨🇭", SA: "🇸🇦", EG: "🇪🇬", MA: "🇲🇦", DZ: "🇩🇿", TN: "🇹🇳", AE: "🇦🇪", LB: "🇱🇧", JO: "🇯🇴", KW: "🇰🇼", QA: "🇶🇦", BH: "🇧🇭", OM: "🇴🇲", YE: "🇾🇪", SY: "🇸🇾", IQ: "🇮🇶", LY: "🇱🇾", US: "🇺🇸", GB: "🇬🇧", AU: "🇦🇺", IN: "🇮🇳", DE: "🇩🇪", ES: "🇪🇸", IT: "🇮🇹", CN: "🇨🇳", JP: "🇯🇵", KR: "🇰🇷", BR: "🇧🇷" };
+// Voices that read long-form French/Arabic content most naturally (shown first).
+const RECOMMENDED = [
+  "fr-FR-VivienneMultilingualNeural", "fr-FR-RemyMultilingualNeural", "fr-FR-DeniseNeural", "fr-FR-HenriNeural", "fr-FR-EloiseNeural",
+  "fr-FR-LucienMultilingualNeural", "fr-FR-JosephineNeural", "fr-FR-AlainNeural", "fr-FR-BrigitteNeural", "fr-FR-CelesteNeural", "fr-FR-ClaudeNeural",
+  "fr-FR-CoralieNeural", "fr-FR-JeromeNeural", "fr-FR-MauriceNeural", "fr-FR-YvesNeural", "fr-FR-YvetteNeural",
+  "fr-CA-SylvieNeural", "fr-CA-ThierryNeural", "fr-CA-JeanNeural", "fr-CA-AntoineNeural", "fr-BE-CharlineNeural", "fr-BE-GerardNeural", "fr-CH-ArianeNeural", "fr-CH-FabriceNeural",
+  "en-US-AvaMultilingualNeural", "en-US-AndrewMultilingualNeural", "en-US-EmmaMultilingualNeural", "en-US-BrianMultilingualNeural",
+  "ar-SA-ZariyahNeural", "ar-SA-HamedNeural", "ar-EG-SalmaNeural", "ar-EG-ShakirNeural", "ar-AE-FatimaNeural", "ar-AE-HamdanNeural",
+  "ar-MA-MounaNeural", "ar-MA-JamalNeural", "ar-DZ-AminaNeural", "ar-DZ-IsmaelNeural", "ar-TN-ReemNeural", "ar-TN-HediNeural",
+  "ar-LB-LaylaNeural", "ar-LB-RamiNeural", "ar-JO-SanaNeural", "ar-JO-TaimNeural", "ar-QA-AmalNeural", "ar-QA-MoazNeural"
+];
+const STYLE_FR = {
+  "narration-professional": "Narration professionnelle", "narration-relaxed": "Narration détendue", "documentary-narration": "Documentaire",
+  newscast: "Journal", "newscast-casual": "Info décontractée", "newscast-formal": "Info formelle", chat: "Conversation", "chat-casual": "Conversation décontractée",
+  cheerful: "Joyeux", excited: "Enthousiaste", friendly: "Amical", hopeful: "Plein d'espoir", calm: "Calme", gentle: "Doux", empathetic: "Empathique",
+  sad: "Triste", angry: "En colère", fearful: "Inquiet", terrified: "Terrifié", disgruntled: "Mécontent", serious: "Sérieux", whispering: "Chuchoté",
+  shouting: "Crié", unfriendly: "Froid", embarrassed: "Gêné", affectionate: "Affectueux", lyrical: "Lyrique", poetry: "Poésie", "poetry-reading": "Lecture de poésie",
+  "customerservice": "Service client", assistant: "Assistant", advertisement_upbeat: "Publicité dynamique", sports_commentary: "Commentaire sportif",
+  sports_commentary_excited: "Commentaire sportif enthousiaste", story: "Histoire", depressed: "Abattu", envious: "Envieux", livecommercial: "Vente en direct"
+};
+let VOICES = [];
+function primaryLang(v) { return v.Locale.slice(0, 2); }
+function speaks(v, lang) {
+  if (primaryLang(v) === lang) return true;
+  return (v.SecondaryLocaleList || []).some(l => l.startsWith(lang + "-"));
+}
+const isMulti = v => /Multilingual/i.test(v.ShortName);
+function voiceLabel(v) {
+  const lang = primaryLang(v) === "ar" ? "Arabe" : primaryLang(v) === "fr" ? "Français" : "Multilingue";
+  return `${lang} – ${v.Gender === "Male" ? "Homme" : "Femme"}`;
+}
+function regionLabel(v) { return LOCALES[v.Locale] || v.LocaleName || v.Locale; }
+function flagOf(v) { return FLAGS[v.Locale.split("-")[1]] || "🌐"; }
+function shortName(v) { return (v.DisplayName || v.LocalName || v.ShortName).replace(/ Multilingual/, ""); }
+async function loadVoices(force = false) {
+  const cached = store.get("dvs.voices", null);
+  if (cached && !force && cached.region === cfg.region && Date.now() - cached.at < 7 * 864e5) { VOICES = cached.list; return VOICES; }
+  const r = await fetch(base() + "/cognitiveservices/voices/list", { headers: { "Ocp-Apim-Subscription-Key": cfg.key } });
+  if (r.status === 401 || r.status === 403) throw new Error("Clé ou région invalide. Vérifie la Clé 1 et la région de ta ressource Speech.");
+  if (!r.ok) throw new Error(`Azure a répondu ${r.status}. Réessaie dans un instant.`);
+  const all = await r.json();
+  VOICES = all.filter(v => !v.ShortName.includes(":") && (v.VoiceType || "Neural") === "Neural" && (speaks(v, "fr") || speaks(v, "ar")) &&
+    (primaryLang(v) === "fr" || primaryLang(v) === "ar" || isMulti(v)))
+    .map(v => ({ ShortName: v.ShortName, DisplayName: v.DisplayName, LocalName: v.LocalName, Gender: v.Gender, Locale: v.Locale, LocaleName: v.LocaleName,
+      StyleList: v.StyleList || [], SecondaryLocaleList: v.SecondaryLocaleList || [] }));
+  VOICES.sort((a, b) => {
+    const ra = RECOMMENDED.indexOf(a.ShortName), rb = RECOMMENDED.indexOf(b.ShortName);
+    return (ra < 0 ? 999 : ra) - (rb < 0 ? 999 : rb) || a.Locale.localeCompare(b.Locale) || shortName(a).localeCompare(shortName(b));
+  });
+  store.set("dvs.voices", { region: cfg.region, at: Date.now(), list: VOICES });
+  return VOICES;
+}
+const voiceByName = n => VOICES.find(v => v.ShortName === n);
+function defaultVoice(lang, gender) {
+  return VOICES.find(v => primaryLang(v) === lang && v.Gender === gender && RECOMMENDED.includes(v.ShortName))
+    || VOICES.find(v => primaryLang(v) === lang && v.Gender === gender) || VOICES.find(v => primaryLang(v) === lang) || VOICES[0];
+}
+
+// ---------------------------------------------------------------- Quotas (per browser + key)
+const DEFAULT_LIMITS = { day: 16000, month: 500000 };
+let limits = store.get("dvs.limits", DEFAULT_LIMITS);
+function usage() {
+  const now = new Date(), day = now.toISOString().slice(0, 10), month = day.slice(0, 7);
+  const u = store.get("dvs.usage", { day, month, dayChars: 0, monthChars: 0 });
+  if (u.month !== month) { u.month = month; u.monthChars = 0; }
+  if (u.day !== day) { u.day = day; u.dayChars = 0; }
+  return u;
+}
+function addUsage(n) { const u = usage(); u.dayChars += n; u.monthChars += n; store.set("dvs.usage", u); renderUsage(); }
+function checkQuota(n) {
+  const u = usage();
+  if (u.dayChars + n > limits.day) return `Quota du jour atteint : ${fmtN(u.dayChars)} / ${fmtN(limits.day)} caractères utilisés, ce script en demande ${fmtN(n)}. Reviens demain ou augmente le quota quotidien dans les réglages (icône ⚙︎).`;
+  if (u.monthChars + n > limits.month) return `Quota du mois atteint : ${fmtN(u.monthChars)} / ${fmtN(limits.month)} caractères. Le palier gratuit Azure se renouvelle le mois prochain.`;
+  return null;
+}
+const fmtN = n => Number(n).toLocaleString("fr-FR");
+function renderUsage() {
+  const u = usage();
+  $("usageChipText").textContent = cfg ? `Aujourd'hui ${fmtN(u.dayChars)} / ${fmtN(limits.day)}` : "Réglages";
+  $("mDay").textContent = `${fmtN(u.dayChars)} / ${fmtN(limits.day)} caractères`;
+  $("mMonth").textContent = `${fmtN(u.monthChars)} / ${fmtN(limits.month)} caractères`;
+  $("mDayBar").style.width = Math.min(100, u.dayChars / limits.day * 100) + "%";
+  $("mMonthBar").style.width = Math.min(100, u.monthChars / limits.month * 100) + "%";
+  $("dailyLimit").value = limits.day; $("monthlyLimit").value = limits.month;
+}
+
+// ---------------------------------------------------------------- Segmenter (sentence/paragraph aware, same rules as the iOS app)
+const SPEAKABLE = /[\p{L}\p{N}]/u;
+const TERMINATORS = new Set([".", "!", "?", "…", ";", "؟", "؛", "。", "！", "？", "۔"]);
+const CLOSERS = new Set(['"', "'", "»", "”", "’", ")", "]", "}", "›", "」", "』"]);
+const UNAMBIGUOUS = new Set(["»", "”", "›"]);
+const CLAUSES = new Set([",", "،", ":", "—", "–"]);
+const ABBR = new Set(["m", "mm", "mme", "mmes", "mlle", "mlles", "dr", "drs", "pr", "me", "mgr", "st", "ste", "cf", "ex", "p", "pp", "vol", "chap", "fig", "av", "bd", "env", "tél", "tel", "réf", "ref", "art", "al", "vs", "mr", "mrs", "ms", "jr", "sr", "inc", "ltd", "approx", "n°", "no", "éd", "ed"]);
+const isSpace = c => /\s/.test(c);
+const isUpper = c => !!c && c !== c.toLowerCase() && c === c.toUpperCase();
+const isLetter = c => /\p{L}/u.test(c);
+function isAbbreviation(current, next) {
+  const body = Array.from(current);
+  while (body.length && (CLOSERS.has(body[body.length - 1]) || isSpace(body[body.length - 1]))) body.pop();
+  if (body[body.length - 1] !== ".") return false;
+  body.pop();
+  let word = "";
+  for (let i = body.length - 1; i >= 0 && (isLetter(body[i]) || body[i] === "°"); i--) word = body[i] + word;
+  if (!word) return false;
+  if (Array.from(word).length === 1 && isUpper(word) && isUpper(next)) return true;
+  const lower = word.toLowerCase();
+  if (lower === "etc") return next ? !isUpper(next) : false;
+  return ABBR.has(lower) && next != null;
+}
+function splitSentences(paragraph) {
+  const chars = Array.from(paragraph), out = [];
+  let cur = "", i = 0;
+  while (i < chars.length) {
+    const c = chars[i];
+    cur += c;
+    if (TERMINATORS.has(c)) {
+      let j = i + 1;
+      while (j < chars.length && (TERMINATORS.has(chars[j]) || CLOSERS.has(chars[j]))) { cur += chars[j]; j++; }
+      let k = j;
+      while (k < chars.length && (chars[k] === " " || chars[k] === " " || chars[k] === " ")) k++;
+      if (k > j && k < chars.length && UNAMBIGUOUS.has(chars[k])) { cur += chars.slice(j, k + 1).join(""); j = k + 1; }
+      const boundary = j >= chars.length || isSpace(chars[j]);
+      let next = null;
+      for (let n = j; n < chars.length; n++) if (!isSpace(chars[n])) { next = chars[n]; break; }
+      if (boundary && !(c === "." && isAbbreviation(cur, next))) { if (cur.trim()) out.push(cur.trim()); cur = ""; }
+      i = j; continue;
+    }
+    i++;
+  }
+  if (cur.trim()) out.push(cur.trim());
+  return out;
+}
+const len = s => Array.from(s).length;
+function pack(units, max) {
+  const out = []; let cur = "", n = 0;
+  for (const u of units) { const l = len(u); if (!cur) { cur = u; n = l; } else if (n + 1 + l <= max) { cur += " " + u; n += 1 + l; } else { out.push(cur); cur = u; n = l; } }
+  if (cur) out.push(cur);
+  return out;
+}
+function splitLong(sentence, max) {
+  const clauses = []; let cur = "";
+  for (const ch of sentence) { cur += ch; if (CLAUSES.has(ch)) { clauses.push(cur); cur = ""; } }
+  if (cur) clauses.push(cur);
+  const units = [];
+  for (const cl of clauses) {
+    const t = cl.trim(); if (!t) continue;
+    if (len(t) <= max) { units.push(t); continue; }
+    const words = [];
+    for (const w of t.split(/\s+/).filter(Boolean)) { const a = Array.from(w); if (a.length <= max) words.push(w); else for (let s = 0; s < a.length; s += max) words.push(a.slice(s, s + max).join("")); }
+    units.push(...pack(words, max));
+  }
+  return pack(units, max);
+}
+// Returns sentences with the pause that follows them ("sentence" | "paragraph" | "none").
+function sentences(text, max = 900) {
+  const result = [];
+  const paras = text.split(/\r\n|\r|\n|\u2028|\u2029/).map(p => p.trim()).filter(p => SPEAKABLE.test(p));
+  for (const p of paras) {
+    const parts = [];
+    for (const s of splitSentences(p)) {
+      if (len(s) <= max) parts.push({ text: s, pause: "sentence" });
+      else { const sub = splitLong(s, max); sub.forEach((t, k) => parts.push({ text: t, pause: k === sub.length - 1 ? "sentence" : "none" })); }
+    }
+    const kept = parts.filter(x => SPEAKABLE.test(x.text));
+    kept.forEach((x, k) => result.push({ text: x.text, pause: k === kept.length - 1 ? "paragraph" : x.pause }));
+  }
+  if (result.length) result[result.length - 1].pause = "none";
+  return result;
+}
+function detectLang(text) {
+  let letters = 0, arabic = 0;
+  for (const ch of text) if (/\p{L}/u.test(ch)) { letters++; if (/[؀-ۿݐ-ݿࢠ-ࣿﭐ-﷿ﹰ-﻿]/.test(ch)) arabic++; }
+  if (!letters) return null;
+  return arabic / letters >= 0.5 ? "ar" : "fr";
+}
+
+// ---------------------------------------------------------------- SSML + Azure synthesis
+const MAX_REQ_CHARS = 3000;     // text per request (keeps each request fast)
+const CONCURRENCY = 4;          // parallel requests (free tier allows 20 per minute)
+function prosodyAttrs(s) {
+  const rate = Math.round((s.speed - 1) * 100), pitch = Number(s.pitch);
+  return `rate="${rate >= 0 ? "+" : ""}${rate}%" pitch="${pitch >= 0 ? "+" : ""}${pitch}st"`;
+}
+// Groups sentences into requests of ≤ MAX_REQ_CHARS. One request can hold several <voice> blocks
+// (French and Arabic passages together), which keeps the number of calls low on the free tier.
+function planRequests(text, s) {
+  const main = voiceByName(project.voice);
+  const mainLang = primaryLang(main) === "ar" ? "ar" : primaryLang(main) === "fr" ? "fr" : (detectLang(text) || "fr");
+  const items = sentences(text).map(x => {
+    const lang = s.autoLang ? (detectLang(x.text) || mainLang) : mainLang;
+    let voice = main, xmlLang = null;
+    if (lang !== mainLang) {
+      if (isMulti(main) && speaks(main, lang)) xmlLang = lang === "ar" ? "ar-SA" : "fr-FR";
+      else voice = voiceByName(lang === "ar" ? s.compAr : s.compFr) || defaultVoice(lang, main.Gender);
+    } else if (isMulti(main) && primaryLang(main) !== lang) xmlLang = lang === "ar" ? "ar-SA" : "fr-FR";
+    return { ...x, voice: voice.ShortName, xmlLang };
+  });
+  const reqs = [];
+  for (const it of items) {
+    const last = reqs[reqs.length - 1];
+    if (last && last.chars + it.text.length <= MAX_REQ_CHARS) { last.items.push(it); last.chars += it.text.length; }
+    else reqs.push({ items: [it], chars: it.text.length, pauseBefore: last ? last.items[last.items.length - 1].pause : null });
+  }
+  return reqs;
+}
+function buildSSML(req, s) {
+  const silence = s.sentPause ? `<mstts:silence type="Sentenceboundary-exact" value="${s.sentPause}ms"/>` : "";
+  const blocks = [];
+  for (const it of req.items) {
+    const last = blocks[blocks.length - 1];
+    if (last && last.voice === it.voice && last.xmlLang === it.xmlLang) last.items.push(it);
+    else blocks.push({ voice: it.voice, xmlLang: it.xmlLang, items: [it] });
+  }
+  const isLastItem = it => it === req.items[req.items.length - 1];
+  const xml = blocks.map(b => {
+    const v = voiceByName(b.voice);
+    let body = "";
+    b.items.forEach(it => {
+      body += esc(it.text);
+      if (!isLastItem(it)) body += it.pause === "paragraph" ? ` <break time="${Math.round(s.pPara * 1000)}ms"/> ` : " ";
+    });
+    if (b.xmlLang) body = `<lang xml:lang="${b.xmlLang}">${body}</lang>`;
+    body = `<prosody ${prosodyAttrs(s)}>${body}</prosody>`;
+    if (s.style && v.StyleList.includes(s.style) && b.voice === project.voice) body = `<mstts:express-as style="${esc(s.style)}">${body}</mstts:express-as>`;
+    return `<voice name="${v.ShortName}">${silence}${body}</voice>`;
+  }).join("");
+  const lead = voiceByName(blocks[0].voice);
+  return `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="https://www.w3.org/2001/mstts" xml:lang="${lead.Locale}">${xml}</speak>`;
+}
+function parseWav(buf) {
+  const v = new DataView(buf);
+  let off = 12, data = null;
+  while (off + 8 <= buf.byteLength) {
+    const id = String.fromCharCode(v.getUint8(off), v.getUint8(off + 1), v.getUint8(off + 2), v.getUint8(off + 3));
+    let size = v.getUint32(off + 4, true);
+    if (id === "data") { if (size === 0 || off + 8 + size > buf.byteLength) size = buf.byteLength - off - 8; data = new Int16Array(buf.slice(off + 8, off + 8 + (size & ~1))); break; }
+    off += 8 + size + (size & 1);
+  }
+  if (!data) throw new Error("Réponse audio illisible.");
+  return data;
+}
+let cancelFlag = false;
+async function synthRequest(ssml, attempt = 0) {
+  let r;
+  try {
+    r = await fetch(base() + "/cognitiveservices/v1", {
+      method: "POST",
+      headers: { "Ocp-Apim-Subscription-Key": cfg.key, "Content-Type": "application/ssml+xml", "X-Microsoft-OutputFormat": "riff-44100hz-16bit-mono-pcm" },
+      body: ssml
+    });
+  } catch (e) {
+    if (attempt < 3) { await sleep(1000 * (attempt + 1)); return synthRequest(ssml, attempt + 1); }
+    throw new Error("Connexion impossible au service de voix. Vérifie ta connexion Internet.");
+  }
+  if (r.status === 429 || r.status >= 500) {
+    if (attempt < 6 && !cancelFlag) { const ra = Number(r.headers.get("Retry-After")) || 0; await sleep(Math.max(ra * 1000, 1500 * (attempt + 1))); return synthRequest(ssml, attempt + 1); }
+    throw new Error(r.status === 429 ? "Trop de demandes en même temps pour le palier gratuit. Patiente une minute puis réessaie." : `Le service de voix est indisponible (${r.status}).`);
+  }
+  if (r.status === 401 || r.status === 403) throw new Error("Clé Azure refusée. Ouvre les réglages (⚙︎) pour la vérifier, ou ton quota mensuel gratuit est épuisé.");
+  if (r.status === 400) throw new Error("Le texte n'a pas pu être lu par la voix choisie (requête invalide).");
+  if (!r.ok) throw new Error(`Erreur du service de voix (${r.status}).`);
+  return parseWav(await r.arrayBuffer());
+}
+
+// ---------------------------------------------------------------- Audio assembly
+function trimI16(x, thr = 120, margin = 0.06) {
+  let a = 0, b = x.length - 1;
+  while (a < x.length && Math.abs(x[a]) <= thr) a++;
+  while (b > a && Math.abs(x[b]) <= thr) b--;
+  if (a >= x.length) return x.subarray(0, 0);
+  const pad = Math.floor(margin * SR);
+  return x.subarray(Math.max(0, a - pad), Math.min(x.length, b + 1 + pad));
+}
+function assemble(parts) { // parts: [{pcm: Int16Array, pauseBefore: seconds}]
+  const chunks = []; let frames = 0;
+  parts.forEach((p, i) => {
+    const pcm = Int16Array.from(i === 0 && parts.length === 1 ? p.pcm : trimI16(p.pcm));
+    const fade = Math.min(Math.floor(0.012 * SR), pcm.length >> 1);
+    for (let k = 0; k < fade; k++) { const g = Math.sin((k + 0.5) / fade * Math.PI / 2); pcm[k] = Math.round(pcm[k] * g); pcm[pcm.length - 1 - k] = Math.round(pcm[pcm.length - 1 - k] * g); }
+    if (i > 0 && p.pauseBefore > 0) { const n = Math.floor(p.pauseBefore * SR); chunks.push(new Int16Array(n)); frames += n; }
+    chunks.push(pcm); frames += pcm.length;
+  });
+  return { chunks, frames };
+}
+
+// ---------------------------------------------------------------- Encoders
+function wavHeader(frames) {
+  const b = new ArrayBuffer(44), v = new DataView(b), w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+  w(0, "RIFF"); v.setUint32(4, 36 + frames * 2, true); w(8, "WAVE"); w(12, "fmt "); v.setUint32(16, 16, true); v.setUint16(20, 1, true);
+  v.setUint16(22, 1, true); v.setUint32(24, SR, true); v.setUint32(28, SR * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true);
+  w(36, "data"); v.setUint32(40, frames * 2, true);
+  return new Uint8Array(b);
+}
+const bytesOf = a => new Uint8Array(a.buffer, a.byteOffset, a.byteLength);
+async function encodeMp3(chunks, onProgress) {
+  const enc = new lamejs.Mp3Encoder(1, SR, 192);
+  const out = []; const total = chunks.reduce((a, c) => a + c.length, 0); let done = 0, since = 0;
+  for (const c of chunks) {
+    for (let i = 0; i < c.length; i += 1152) {
+      const buf = enc.encodeBuffer(c.subarray(i, i + 1152)); if (buf.length) out.push(new Uint8Array(buf));
+      since += 1152; done += Math.min(1152, c.length - i);
+      if (since > SR * 4) { since = 0; onProgress(done / total); await nextFrame(); }
+    }
+  }
+  const end = enc.flush(); if (end.length) out.push(new Uint8Array(end));
+  return new Blob(out, { type: "audio/mpeg" });
+}
+async function aacSupported() {
+  try { return typeof AudioEncoder !== "undefined" && typeof Mp4Muxer !== "undefined" && (await AudioEncoder.isConfigSupported({ codec: "mp4a.40.2", sampleRate: SR, numberOfChannels: 1, bitrate: 192000 })).supported; } catch { return false; }
+}
+async function encodeM4a(chunks, onProgress) {
+  const target = new Mp4Muxer.ArrayBufferTarget();
+  const muxer = new Mp4Muxer.Muxer({ target, audio: { codec: "aac", numberOfChannels: 1, sampleRate: SR }, fastStart: "in-memory" });
+  let err = null;
+  const enc = new AudioEncoder({ output: (chunk, meta) => muxer.addAudioChunk(chunk, meta), error: e => { err = e; } });
+  enc.configure({ codec: "mp4a.40.2", sampleRate: SR, numberOfChannels: 1, bitrate: 192000 });
+  const total = chunks.reduce((a, c) => a + c.length, 0); let ts = 0;
+  for (const c of chunks) for (let i = 0; i < c.length; i += SR) {
+    const part = c.subarray(i, i + SR), f = new Float32Array(part.length);
+    for (let k = 0; k < part.length; k++) f[k] = part[k] / 32768;
+    enc.encode(new AudioData({ format: "f32-planar", sampleRate: SR, numberOfFrames: f.length, numberOfChannels: 1, timestamp: Math.round(ts / SR * 1e6), data: f }));
+    ts += f.length;
+    if (enc.encodeQueueSize > 20) await sleep(5);
+    onProgress(ts / total);
+    if (err) throw err;
+  }
+  await enc.flush(); enc.close(); muxer.finalize();
+  if (err) throw err;
+  return new Blob([target.buffer], { type: "audio/mp4" });
+}
+function saveBlob(blob, name) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a"); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+
+// ---------------------------------------------------------------- Projects (per browser)
+const DEFAULTS = { speed: 1, pitch: 0, style: "", sentPause: "", pPara: 0.7, autoLang: true, compAr: "", compFr: "" };
+const newProject = voice => ({ id: Math.random().toString(36).slice(2), title: "", script: "", voice: voice || "", settings: { ...DEFAULTS }, updated: Date.now() });
+let projects = store.get("dvs.projects2", []);
+let project = projects.find(p => p.id === store.get("dvs.current2", null)) || newProject();
+let audio = null;
+const ui = { lang: "fr", gender: "", locale: "", q: "" };
+function saveProject() {
+  if (!project.script.trim() && !project.title.trim()) return;
+  project.updated = Date.now();
+  const i = projects.findIndex(p => p.id === project.id);
+  if (i >= 0) projects[i] = project; else projects.unshift(project);
+  projects.sort((a, b) => b.updated - a.updated);
+  if (!store.set("dvs.projects2", projects)) { projects = projects.slice(0, 20); store.set("dvs.projects2", projects); }
+  store.set("dvs.current2", project.id);
+  renderProjects();
+}
+let saveTimer = null;
+const scheduleSave = () => { clearTimeout(saveTimer); saveTimer = setTimeout(saveProject, 600); };
+
+// ---------------------------------------------------------------- Rendering
+function fmt(sec) { sec = Math.max(0, Math.round(sec)); const h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), s = sec % 60; return h ? `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}` : `${m}:${String(s).padStart(2, "0")}`; }
+function setPressed(seg, val) { for (const b of $(seg).querySelectorAll("button")) b.setAttribute("aria-pressed", String(b.dataset.v === String(val))); }
+function avatarHTML(v) { return `<div class="avatar ${v.Gender === "Male" ? "m" : "f"}">${esc(shortName(v)[0] || "?")}<span class="flag">${flagOf(v)}</span></div>`; }
+function renderVoice() {
+  const v = voiceByName(project.voice); if (!v) return;
+  $("curAvatar").className = "avatar " + (v.Gender === "Male" ? "m" : "f");
+  $("curInitial").textContent = shortName(v)[0];
+  $("curFlag").textContent = flagOf(v);
+  $("curName").textContent = shortName(v);
+  $("curLabel").textContent = `${voiceLabel(v)} · ${regionLabel(v)}`;
+  $("curDetail").textContent = [isMulti(v) ? "Multilingue (FR + AR + 40 langues)" : "Voix neuronale", v.StyleList.length ? `${v.StyleList.length} styles` : ""].filter(Boolean).join(" · ");
+  // Styles
+  const sf = $("styleField"), sel = $("styleSel");
+  if (v.StyleList.length) {
+    sf.hidden = false;
+    sel.innerHTML = `<option value="">Neutre (par défaut)</option>` + v.StyleList.map(st => `<option value="${esc(st)}">${esc(STYLE_FR[st] || st)}</option>`).join("");
+    sel.value = v.StyleList.includes(project.settings.style) ? project.settings.style : "";
+  } else { sf.hidden = true; }
+  renderGrid(); renderPreviewButtons(); renderCompanions(); updateCost();
+}
+function renderLocaleFilter() {
+  const locs = [...new Set(VOICES.filter(v => !ui.lang || primaryLang(v) === ui.lang || (isMulti(v) && speaks(v, ui.lang))).map(v => v.Locale))];
+  $("localeFilter").innerHTML = `<option value="">Tous les accents</option>` + locs.map(l => `<option value="${l}">${esc((LOCALES[l] || l) + " (" + l + ")")}</option>`).join("");
+  $("localeFilter").value = locs.includes(ui.locale) ? ui.locale : "";
+  if (!locs.includes(ui.locale)) ui.locale = "";
+}
+function renderGrid() {
+  const reco = $("recoOnly").checked, q = ui.q.trim().toLowerCase();
+  const list = VOICES.filter(v => (!ui.lang || primaryLang(v) === ui.lang || (isMulti(v) && speaks(v, ui.lang)))
+    && (!ui.gender || v.Gender === ui.gender) && (!ui.locale || v.Locale === ui.locale)
+    && (!reco || RECOMMENDED.includes(v.ShortName)) && (!q || shortName(v).toLowerCase().includes(q)));
+  $("voiceGrid").innerHTML = list.length ? list.map(v => `
+    <div class="vtile" role="button" tabindex="0" data-voice="${v.ShortName}" aria-pressed="${v.ShortName === project.voice}" aria-label="${esc(voiceLabel(v) + " · " + shortName(v))}">
+      ${avatarHTML(v)}
+      <div class="txt"><div class="nm">${esc(shortName(v))}</div>
+        <div class="sub">${esc(voiceLabel(v))} · ${esc(regionLabel(v))}</div>
+        <div>${isMulti(v) ? '<span class="tag">Multilingue</span>' : ""}${v.StyleList.length ? `<span class="tag">${v.StyleList.length} styles</span>` : ""}${RECOMMENDED.slice(0, 16).includes(v.ShortName) || /^ar-(SA|EG)/.test(v.ShortName) && RECOMMENDED.includes(v.ShortName) ? '<span class="tag">Narration</span>' : ""}</div></div>
+      <button class="round" data-preview="${v.ShortName}" aria-label="Écouter ${esc(shortName(v))}"><svg class="icon"><use href="#i-play"/></svg></button>
+    </div>`).join("") : `<div class="hint">Aucune voix ne correspond à ces filtres.</div>`;
+  $("voiceCount").textContent = `${VOICES.length} voix`;
+  renderPreviewButtons();
+}
+function renderCompanions() {
+  const mk = (lang, cur) => VOICES.filter(v => primaryLang(v) === lang).map(v => `<option value="${v.ShortName}" ${v.ShortName === cur ? "selected" : ""}>${esc(shortName(v) + " – " + (v.Gender === "Male" ? "Homme" : "Femme") + " · " + regionLabel(v))}</option>`).join("");
+  const main = voiceByName(project.voice); if (!main) return;
+  if (!voiceByName(project.settings.compAr)) project.settings.compAr = (defaultVoice("ar", main.Gender) || {}).ShortName || "";
+  if (!voiceByName(project.settings.compFr)) project.settings.compFr = (defaultVoice("fr", main.Gender) || {}).ShortName || "";
+  $("compAr").innerHTML = mk("ar", project.settings.compAr);
+  $("compFr").innerHTML = mk("fr", project.settings.compFr);
+}
+function renderStats() {
+  const t = project.script, chars = Array.from(t).length, words = (t.match(/\S+/g) || []).length;
+  $("stChars").textContent = fmtN(chars); $("stWords").textContent = fmtN(words);
+  $("stDur").textContent = "≈ " + fmt(chars / 15 / project.settings.speed);
+  updateCost();
+}
+function updateCost() {
+  const n = billable(project.script), u = usage();
+  $("costHint").textContent = n ? `Cette génération utilisera ${fmtN(n)} caractères · reste aujourd'hui : ${fmtN(Math.max(0, limits.day - u.dayChars))}` : "";
+}
+const billable = t => sentences(t).reduce((a, x) => a + x.text.length, 0);
+function renderSettings() {
+  const s = project.settings;
+  $("speed").value = s.speed; $("speedVal").textContent = Number(s.speed).toFixed(2) + "×";
+  $("pitch").value = s.pitch; $("pitchVal").textContent = Number(s.pitch) === 0 ? "Naturelle" : (s.pitch > 0 ? "+" : "") + Number(s.pitch).toFixed(1) + " demi-ton" + (Math.abs(s.pitch) >= 2 ? "s" : "");
+  $("sentPause").value = s.sentPause || "";
+  $("pPara").value = s.pPara; $("pParaVal").textContent = Number(s.pPara).toFixed(1) + " s";
+  $("autoLang").checked = !!s.autoLang;
+}
+function renderProjects() {
+  const box = $("projects");
+  if (!projects.length) { box.innerHTML = `<div class="hint">Aucun projet pour l'instant. Écris un script : il sera sauvegardé ici.</div>`; return; }
+  box.innerHTML = projects.map(p => {
+    const v = voiceByName(p.voice) || { Gender: "Female", Locale: "fr-FR", DisplayName: "?" , ShortName: "" };
+    const title = esc(p.title || p.script.split("\n")[0].split(/\s+/).slice(0, 6).join(" ") || "Projet sans titre");
+    return `<div class="proj" aria-current="${p.id === project.id}">${avatarHTML(v)}
+      <button class="open" data-open="${p.id}"><div class="t">${title}</div><div class="e">${esc(p.script.slice(0, 120).replace(/\n/g, " ")) || "&nbsp;"}</div></button>
+      <button class="del" data-del="${p.id}" aria-label="Supprimer ce projet"><svg class="icon"><use href="#i-x"/></svg></button></div>`;
+  }).join("");
+}
+function showProgress(f, text) { $("progressBox").hidden = false; $("bar").style.width = Math.round(Math.min(1, f) * 100) + "%"; $("statusLine").textContent = text; }
+function hideProgress() { $("progressBox").hidden = true; }
+function showError(msg) { $("errorBox").hidden = !msg; $("errorBox").textContent = msg || ""; }
+function loadProjectIntoUI() {
+  if (!voiceByName(project.voice)) project.voice = (defaultVoice("fr", "Female") || {}).ShortName;
+  $("title").value = project.title; $("script").value = project.script;
+  renderSettings(); renderVoice(); renderStats(); renderProjects(); clearAudio();
+}
+
+// ---------------------------------------------------------------- Previews (cached in IndexedDB so they cost quota once)
+function idb() { return new Promise((res, rej) => { try { const r = indexedDB.open("dianavoicestudio-previews", 1); r.onupgradeneeded = () => r.result.createObjectStore("p"); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); } catch (e) { rej(e); } }); }
+async function idbGet(k) { try { const db = await idb(); return await new Promise(res => { const q = db.transaction("p").objectStore("p").get(k); q.onsuccess = () => res(q.result || null); q.onerror = () => res(null); }); } catch { return null; } }
+async function idbPut(k, v) { try { const db = await idb(); await new Promise(res => { const t = db.transaction("p", "readwrite"); t.objectStore("p").put(v, k); t.oncomplete = res; t.onerror = res; }); } catch { /* optional */ } }
+const previewAudio = new Audio(); let previewing = null, previewLoading = null;
+previewAudio.onended = () => { previewing = null; renderPreviewButtons(); };
+function previewText(v) {
+  const name = shortName(v);
+  return primaryLang(v) === "ar"
+    ? `مرحبًا، أنا ${v.LocalName && /[؀-ۿ]/.test(v.LocalName) ? v.LocalName : name}. يسعدني أن أروي قصصكم وأن أقدّم محتواكم بصوتٍ طبيعيٍّ وواضح.`
+    : `Bonjour, je m'appelle ${name}. Je raconte vos histoires et je donne vie à vos vidéos, avec une voix naturelle et chaleureuse.`;
+}
+function renderPreviewButtons() {
+  const icon = id => previewLoading === id ? "#i-load" : previewing === id ? "#i-stop" : "#i-play";
+  for (const b of document.querySelectorAll("[data-preview]")) b.innerHTML = `<svg class="icon"><use href="${icon(b.dataset.preview)}"/></svg>`;
+  $("curPreview").innerHTML = `<svg class="icon"><use href="${icon(project.voice)}"/></svg>`;
+}
+async function togglePreview(name) {
+  if (previewing === name) { previewAudio.pause(); previewing = null; renderPreviewButtons(); return; }
+  if (previewLoading) return;
+  previewAudio.pause(); previewing = null; $("audio").pause();
+  const v = voiceByName(name); if (!v) return;
+  const key = "v2/" + name;
+  try {
+    let blob = await idbGet(key);
+    if (!blob) {
+      previewLoading = name; renderPreviewButtons();
+      const text = previewText(v);
+      const ssml = `<speak version="1.0" xmlns="http://www.w3.org/2001/10/synthesis" xml:lang="${v.Locale}"><voice name="${v.ShortName}">${esc(text)}</voice></speak>`;
+      const pcm = await synthRequest(ssml);
+      addUsage(text.length);
+      blob = new Blob([wavHeader(pcm.length), bytesOf(pcm)], { type: "audio/wav" });
+      idbPut(key, blob);
+    }
+    previewLoading = null;
+    previewAudio.src = URL.createObjectURL(blob);
+    await previewAudio.play(); previewing = name;
+  } catch (e) { previewLoading = null; showError(e.message || String(e)); }
+  renderPreviewButtons();
+}
+
+// ---------------------------------------------------------------- Generation
+let generating = false;
+function clearAudio() {
+  const a = $("audio"); a.pause(); if (audio && audio.url) URL.revokeObjectURL(audio.url); a.removeAttribute("src");
+  audio = null; $("playerCard").hidden = true; $("genLabel").textContent = "Générer";
+}
+async function generate() {
+  if (generating) { cancelFlag = true; return; }
+  showError("");
+  const text = project.script;
+  if (!SPEAKABLE.test(text)) { showError("Écris ou colle d'abord ton script."); return; }
+  const need = billable(text);
+  const q = checkQuota(need); if (q) { showError(q); return; }
+  const s = project.settings;
+  const reqs = planRequests(text, s);
+  generating = true; cancelFlag = false;
+  previewAudio.pause(); previewing = null; renderPreviewButtons();
+  clearAudio(); $("genLabel").textContent = "Annuler";
+  let wake = null; try { wake = await navigator.wakeLock?.request("screen"); } catch { /* optional */ }
+  const t0 = performance.now();
+  try {
+    const results = new Array(reqs.length); let next = 0, done = 0, usedChars = 0;
+    showProgress(0.02, `Génération : 0 / ${reqs.length} parties…`);
+    const worker = async () => {
+      while (next < reqs.length && !cancelFlag) {
+        const i = next++;
+        results[i] = await synthRequest(buildSSML(reqs[i], s));
+        usedChars += reqs[i].chars; addUsage(reqs[i].chars);
+        done++;
+        const el = (performance.now() - t0) / 1000;
+        showProgress(0.05 + 0.9 * done / reqs.length, `Partie ${done} / ${reqs.length} · ${el.toFixed(1)} s`);
+      }
+    };
+    await Promise.all(Array.from({ length: Math.min(CONCURRENCY, reqs.length) }, worker));
+    if (cancelFlag) throw new Error("cancel");
+    const parts = reqs.map((r, i) => ({ pcm: results[i], pauseBefore: r.pauseBefore === "paragraph" ? s.pPara : r.pauseBefore === "sentence" ? 0.25 / s.speed : 0.02 }));
+    const { chunks, frames } = assemble(parts);
+    if (!frames) throw new Error("Aucun son n'a été généré.");
+    const url = URL.createObjectURL(new Blob([wavHeader(frames), ...chunks.map(bytesOf)], { type: "audio/wav" }));
+    audio = { chunks, frames, url, peaks: computePeaks(chunks, frames, 160) };
+    $("audio").src = url; $("playerCard").hidden = false; $("audioDur").textContent = fmt(frames / SR);
+    hideProgress(); drawWave(); updateTimes(); $("dlStatus").textContent = `Généré en ${((performance.now() - t0) / 1000).toFixed(1)} s.`;
+    $("playerCard").scrollIntoView({ behavior: "smooth", block: "nearest" });
+  } catch (e) {
+    hideProgress();
+    if ((e && e.message) !== "cancel") showError(e.message || String(e));
+  } finally {
+    generating = false; cancelFlag = false;
+    $("genLabel").textContent = audio ? "Générer à nouveau" : "Générer";
+    try { wake && wake.release(); } catch { /* ignore */ }
+    updateCost();
+  }
+}
+
+// ---------------------------------------------------------------- Player
+function computePeaks(chunks, frames, bins) {
+  const per = Math.max(1, Math.floor(frames / bins)), peaks = new Float32Array(bins);
+  let idx = 0, bin = 0, max = 0;
+  for (const c of chunks) for (let i = 0; i < c.length; i += 8) { const v = Math.abs(c[i]); if (v > max) max = v; idx += 8; if (idx >= per) { if (bin < bins) peaks[bin++] = max; idx = 0; max = 0; } }
+  let top = 1; for (const p of peaks) if (p > top) top = p;
+  return Array.from(peaks, p => p / top);
+}
+function drawWave() {
+  const c = $("wave"); if (!audio) return;
+  const dpr = window.devicePixelRatio || 1, w = c.clientWidth, h = c.clientHeight;
+  c.width = Math.round(w * dpr); c.height = Math.round(h * dpr);
+  const g = c.getContext("2d"); g.scale(dpr, dpr); g.clearRect(0, 0, w, h);
+  const cs = getComputedStyle(document.documentElement), played = cs.getPropertyValue("--rose-2").trim(), rest = cs.getPropertyValue("--silver-2").trim();
+  const a = $("audio"), prog = a.duration ? a.currentTime / a.duration : 0, n = audio.peaks.length, gap = 2, bw = Math.max(1.5, (w - gap * (n - 1)) / n);
+  for (let i = 0; i < n; i++) {
+    const bh = Math.max(3, audio.peaks[i] * h), on = i / n <= prog;
+    g.fillStyle = on ? played : rest; g.globalAlpha = on ? 1 : 0.55;
+    g.beginPath(); const x = i * (bw + gap), y = (h - bh) / 2; g.roundRect ? g.roundRect(x, y, bw, bh, Math.min(bw / 2, 3)) : g.rect(x, y, bw, bh); g.fill();
+  }
+  g.globalAlpha = 1;
+}
+function updateTimes() {
+  const a = $("audio"), d = a.duration || (audio ? audio.frames / SR : 0);
+  $("tCur").textContent = fmt(a.currentTime || 0); $("tLeft").textContent = "-" + fmt(Math.max(0, d - (a.currentTime || 0)));
+  $("ppIcon").setAttribute("href", a.paused ? "#i-play" : "#i-pause"); $("playPause").setAttribute("aria-label", a.paused ? "Écouter" : "Pause");
+}
+function baseName() {
+  const t = (project.title || project.script.split("\n")[0].split(/\s+/).slice(0, 6).join(" ") || "DianaVoiceStudio").replace(/[\\/:*?"<>|\n]+/g, " ").trim().slice(0, 60);
+  const d = new Date(); return `${t} - ${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")} ${String(d.getHours()).padStart(2, "0")}h${String(d.getMinutes()).padStart(2, "0")}`;
+}
+let aacOK = false;
+async function withBusy(label, fn) {
+  const all = ["dlWav", "dlMp3", "dlM4a"].map($); all.forEach(b => b.disabled = true); $("dlStatus").textContent = label;
+  try { await fn(); } catch (e) { $("dlStatus").textContent = "Erreur : " + (e.message || e); } finally { all.forEach(b => b.disabled = false); if (!aacOK) $("dlM4a").disabled = true; }
+}
+
+// ---------------------------------------------------------------- Setup / settings
+async function connect() {
+  const key = $("keyInput").value.trim(), region = $("regionInput").value;
+  $("setupError").hidden = true;
+  if (key.length < 20) { $("setupError").hidden = false; $("setupError").textContent = "Colle la Clé 1 complète de ta ressource Speech."; return; }
+  $("connectBtn").disabled = true; $("connectBtn").textContent = "Connexion…";
+  const prev = cfg; cfg = { key, region };
+  try { await loadVoices(true); store.set("dvs.azure", cfg); showStudio(); }
+  catch (e) { cfg = prev; $("setupError").hidden = false; $("setupError").textContent = e.message || String(e); }
+  finally { $("connectBtn").disabled = false; $("connectBtn").textContent = "Connecter les voix"; }
+}
+function showSetup() { $("setupCard").hidden = false; $("studio").hidden = true; $("settingsCard").hidden = true; if (cfg) { $("keyInput").value = ""; $("regionInput").value = cfg.region; } renderUsage(); }
+function showStudio() {
+  $("setupCard").hidden = true; $("studio").hidden = false; $("studio").style.display = "grid";
+  ui.lang = "fr"; setPressed("langSeg", ui.lang); setPressed("genderSeg", ui.gender);
+  renderLocaleFilter(); loadProjectIntoUI(); renderUsage();
+}
+
+// ---------------------------------------------------------------- Events
+$("connectBtn").onclick = connect;
+$("keyInput").addEventListener("keydown", e => { if (e.key === "Enter") connect(); });
+$("usageChip").onclick = () => { const s = $("settingsCard"); s.hidden = !s.hidden; renderUsage(); if (!s.hidden) s.scrollIntoView({ behavior: "smooth" }); };
+$("closeSettings").onclick = () => { $("settingsCard").hidden = true; };
+$("dailyLimit").onchange = e => { limits.day = Math.max(1000, Number(e.target.value) || DEFAULT_LIMITS.day); store.set("dvs.limits", limits); renderUsage(); updateCost(); };
+$("monthlyLimit").onchange = e => { limits.month = Math.max(1000, Number(e.target.value) || DEFAULT_LIMITS.month); store.set("dvs.limits", limits); renderUsage(); };
+$("changeKey").onclick = showSetup;
+$("forgetKey").onclick = e => {
+  const b = e.currentTarget;
+  if (b.dataset.confirm !== "1") { b.dataset.confirm = "1"; b.textContent = "Confirmer la suppression"; setTimeout(() => { b.dataset.confirm = ""; b.textContent = "Supprimer la clé de ce navigateur"; }, 3000); return; }
+  store.del("dvs.azure"); store.del("dvs.voices"); cfg = null; showSetup();
+};
+$("script").addEventListener("input", e => { project.script = e.target.value; renderStats(); scheduleSave(); });
+$("title").addEventListener("input", e => { project.title = e.target.value; scheduleSave(); });
+$("clearScript").onclick = () => { project.script = ""; $("script").value = ""; renderStats(); scheduleSave(); $("script").focus(); };
+$("insertPause").onclick = () => { const ta = $("script"), s = ta.selectionStart ?? ta.value.length; ta.setRangeText("\n", s, ta.selectionEnd ?? s, "end"); project.script = ta.value; renderStats(); scheduleSave(); ta.focus(); };
+$("newProject").onclick = () => { if (generating) return; saveProject(); project = newProject(project.voice); store.set("dvs.current2", project.id); loadProjectIntoUI(); $("script").focus(); };
+$("togglePicker").onclick = () => { const p = $("picker"); p.hidden = !p.hidden; p.style.display = p.hidden ? "none" : "grid"; $("togglePicker").setAttribute("aria-expanded", String(!p.hidden)); };
+$("langSeg").onclick = e => { const b = e.target.closest("button"); if (!b) return; ui.lang = b.dataset.v; setPressed("langSeg", ui.lang); renderLocaleFilter(); renderGrid(); };
+$("genderSeg").onclick = e => { const b = e.target.closest("button"); if (!b) return; ui.gender = b.dataset.v; setPressed("genderSeg", ui.gender); renderGrid(); };
+$("localeFilter").onchange = e => { ui.locale = e.target.value; renderGrid(); };
+$("voiceSearch").oninput = e => { ui.q = e.target.value; renderGrid(); };
+$("recoOnly").onchange = renderGrid;
+$("voiceGrid").addEventListener("click", e => {
+  const pb = e.target.closest("[data-preview]"); if (pb) { e.stopPropagation(); togglePreview(pb.dataset.preview); return; }
+  const t = e.target.closest("[data-voice]"); if (!t || generating) return;
+  project.voice = t.dataset.voice; project.settings.compAr = ""; project.settings.compFr = ""; renderVoice(); scheduleSave();
+});
+$("voiceGrid").addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target.dataset && e.target.dataset.voice) { e.preventDefault(); e.target.click(); } });
+$("curPreview").onclick = () => togglePreview(project.voice);
+$("styleSel").onchange = e => { project.settings.style = e.target.value; scheduleSave(); };
+const bindRange = (id, key) => $(id).addEventListener("input", e => { project.settings[key] = Number(e.target.value); renderSettings(); renderStats(); scheduleSave(); });
+bindRange("speed", "speed"); bindRange("pitch", "pitch"); bindRange("pPara", "pPara");
+$("sentPause").onchange = e => { project.settings.sentPause = e.target.value; scheduleSave(); };
+$("autoLang").onchange = e => { project.settings.autoLang = e.target.checked; scheduleSave(); };
+$("compAr").onchange = e => { project.settings.compAr = e.target.value; scheduleSave(); };
+$("compFr").onchange = e => { project.settings.compFr = e.target.value; scheduleSave(); };
+$("generate").onclick = generate;
+$("projects").addEventListener("click", e => {
+  const o = e.target.closest("[data-open]"), d = e.target.closest("[data-del]");
+  if (generating) return;
+  if (o) { saveProject(); project = projects.find(p => p.id === o.dataset.open) || project; store.set("dvs.current2", project.id); loadProjectIntoUI(); window.scrollTo({ top: 0, behavior: "smooth" }); }
+  if (d) {
+    if (d.dataset.confirm !== "1") { d.dataset.confirm = "1"; d.style.color = "var(--danger)"; d.setAttribute("aria-label", "Confirmer la suppression"); setTimeout(() => { d.dataset.confirm = ""; d.style.color = ""; }, 3000); return; }
+    projects = projects.filter(p => p.id !== d.dataset.del); store.set("dvs.projects2", projects);
+    if (project.id === d.dataset.del) { project = newProject(project.voice); loadProjectIntoUI(); } else renderProjects();
+  }
+});
+const A = $("audio");
+$("playPause").onclick = () => { if (A.paused) { previewAudio.pause(); previewing = null; renderPreviewButtons(); A.play(); } else A.pause(); };
+$("back10").onclick = () => { A.currentTime = Math.max(0, A.currentTime - 10); };
+$("fwd10").onclick = () => { A.currentTime = Math.min(A.duration || 0, A.currentTime + 10); };
+["timeupdate", "play", "pause", "ended", "loadedmetadata", "seeked"].forEach(ev => A.addEventListener(ev, () => { updateTimes(); drawWave(); }));
+const seek = e => { const r = $("wave").getBoundingClientRect(); const f = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)); if (A.duration) A.currentTime = f * A.duration; };
+$("wave").addEventListener("pointerdown", e => { seek(e); $("wave").setPointerCapture(e.pointerId); });
+$("wave").addEventListener("pointermove", e => { if (e.buttons) seek(e); });
+window.addEventListener("resize", drawWave);
+$("dlWav").onclick = () => withBusy("Préparation du WAV…", async () => { saveBlob(new Blob([wavHeader(audio.frames), ...audio.chunks.map(bytesOf)], { type: "audio/wav" }), baseName() + ".wav"); $("dlStatus").textContent = "WAV prêt."; });
+$("dlMp3").onclick = () => withBusy("Encodage MP3…", async () => { const b = await encodeMp3(audio.chunks, f => { $("dlStatus").textContent = `Encodage MP3… ${Math.round(f * 100)} %`; }); saveBlob(b, baseName() + ".mp3"); $("dlStatus").textContent = "MP3 prêt."; });
+$("dlM4a").onclick = () => withBusy("Encodage AAC…", async () => { const b = await encodeM4a(audio.chunks, f => { $("dlStatus").textContent = `Encodage AAC… ${Math.round(f * 100)} %`; }); saveBlob(b, baseName() + ".m4a"); $("dlStatus").textContent = "M4A prêt."; });
+window.addEventListener("pagehide", saveProject);
+
+// ---------------------------------------------------------------- Boot
+aacSupported().then(ok => { aacOK = ok; $("dlM4a").disabled = !ok; if (!ok) $("dlM4a").querySelector("small").textContent = "non disponible sur ce navigateur"; });
+renderUsage();
+if (!cfg) showSetup();
+else loadVoices().then(showStudio).catch(e => { showSetup(); $("setupError").hidden = false; $("setupError").textContent = e.message || String(e); });
+</script>
+</body>
+</html>
