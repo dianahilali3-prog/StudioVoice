@@ -16,8 +16,10 @@ final class SupertonicRuntime {
     private let vocoder: ORTSession
 
     init(files: SupertonicModelFiles, useNeuralEngine: Bool) throws {
-        config = (try? SupertonicConfig.load(from: files.config)) ?? .fallback
-        env = try ORTEnv(loggingLevel: ORTLoggingLevel.warning)
+        let config = (try? SupertonicConfig.load(from: files.config)) ?? .fallback
+        self.config = config
+        let env = try ORTEnv(loggingLevel: ORTLoggingLevel.warning)
+        self.env = env
         let threads = Int32(max(1, min(ProcessInfo.processInfo.activeProcessorCount, 6)))
 
         func makeSession(_ url: URL, allowCoreML: Bool) throws -> ORTSession {
@@ -32,10 +34,14 @@ final class SupertonicRuntime {
             return try ORTSession(env: env, modelPath: url.path, sessionOptions: options)
         }
 
-        durationPredictor = try makeSession(files.durationPredictor, allowCoreML: false)
-        textEncoder = try makeSession(files.textEncoder, allowCoreML: true)
-        vectorEstimator = try makeSession(files.vectorEstimator, allowCoreML: true)
-        vocoder = try makeSession(files.vocoder, allowCoreML: true)
+        let durationPredictor = try makeSession(files.durationPredictor, allowCoreML: false)
+        let textEncoder = try makeSession(files.textEncoder, allowCoreML: true)
+        let vectorEstimator = try makeSession(files.vectorEstimator, allowCoreML: true)
+        let vocoder = try makeSession(files.vocoder, allowCoreML: true)
+        self.durationPredictor = durationPredictor
+        self.textEncoder = textEncoder
+        self.vectorEstimator = vectorEstimator
+        self.vocoder = vocoder
     }
 
     /// Synthesizes one segment and returns mono Float32 samples at `config.sampleRate`.
