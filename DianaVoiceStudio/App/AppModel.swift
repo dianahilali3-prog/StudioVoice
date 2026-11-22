@@ -208,6 +208,13 @@ final class AppModel {
         UIApplication.shared.isIdleTimerDisabled = true
         let background = UIApplication.shared.beginBackgroundTask(withName: "generation")
 
+        let reportProgress: @Sendable (GenerationProgress) -> Void = { progress in
+            Task { @MainActor [weak self] in
+                guard let self, self.generationState.isRunning else { return }
+                self.generationState = .running(progress)
+            }
+        }
+
         generationTask = Task { [weak self] in
             defer {
                 UIApplication.shared.isIdleTimerDisabled = false
@@ -215,12 +222,7 @@ final class AppModel {
             }
             do {
                 let result = try await pipeline.run(text: script, voice: voice, settings: settingsSnapshot,
-                                                    seed: seed, output: output) { progress in
-                    Task { @MainActor [weak self] in
-                        guard let self, self.generationState.isRunning else { return }
-                        self.generationState = .running(progress)
-                    }
-                }
+                                                    seed: seed, output: output, onProgress: reportProgress)
                 guard let self else { return }
                 if self.project.id == projectID {
                     self.project.audioFileName = result.url.lastPathComponent

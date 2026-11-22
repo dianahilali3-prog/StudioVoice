@@ -75,6 +75,25 @@ jobs:
             -resultBundlePath TestResults.xcresult \
             -quiet
 
+      - name: Test summary
+        if: always()
+        run: |
+          [ -d TestResults.xcresult ] || exit 0
+          xcrun xcresulttool get test-results summary --path TestResults.xcresult --compact | python3 -c '
+          import json, sys
+          d = json.load(sys.stdin)
+          print("Résultat:", d.get("result"), "| total:", d.get("totalTestCount"), "| réussis:", d.get("passedTests"),
+                "| échoués:", d.get("failedTests"), "| ignorés:", d.get("skippedTests"))
+          '
+          xcrun xcresulttool get test-results tests --path TestResults.xcresult --compact | python3 -c '
+          import json, sys
+          def walk(n, depth=0):
+              if n.get("nodeType") == "Test Case":
+                  print("  %-8s %s (%s)" % (n.get("result"), n.get("name"), n.get("duration", "")))
+              for c in n.get("children", []): walk(c, depth + 1)
+          for n in json.load(sys.stdin).get("testNodes", []): walk(n)
+          '
+
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
