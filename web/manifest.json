@@ -1,0 +1,41 @@
+{
+ "files": {
+  "duration_predictor.onnx": {
+   "parts": [
+    "models/duration_predictor.part0.dat.wasm"
+   ],
+   "size": 3700147
+  },
+  "text_encoder.onnx": {
+   "parts": [
+    "models/text_encoder.part0.dat.wasm",
+    "models/text_encoder.part1.dat.wasm"
+   ],
+   "size": 16195891
+  },
+  "vector_estimator.onnx": {
+   "parts": [
+    "models/vector_estimator.part0.dat.wasm",
+    "models/vector_estimator.part1.dat.wasm",
+    "models/vector_estimator.part2.dat.wasm",
+    "models/vector_estimator.part3.dat.wasm",
+    "models/vector_estimator.part4.dat.wasm"
+   ],
+   "size": 65360834
+  },
+  "vocoder.onnx": {
+   "parts": [
+    "models/vocoder.part0.dat.wasm",
+    "models/vocoder.part1.dat.wasm",
+    "models/vocoder.part2.dat.wasm",
+    "models/vocoder.part3.dat.wasm",
+    "models/vocoder.part4.dat.wasm",
+    "models/vocoder.part5.dat.wasm",
+    "models/vocoder.part6.dat.wasm",
+    "models/vocoder.part7.dat.wasm"
+   ],
+   "size": 101424195
+  }
+ },
+ "total": 197927099
+}

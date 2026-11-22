@@ -241,6 +241,22 @@ y compris l'inférence réelle, à chaque push.
 
 ---
 
+## Version web (aucune installation)
+
+`web/index.html` est une version web de DianaVoiceStudio : mêmes 20 voix Supertonic 3, exécutées
+**dans le navigateur** (ONNX Runtime Web, WebAssembly). Elle est publiée comme page claude.ai :
+on ouvre le lien sur l'iPhone (Safari ou l'app Claude) et on utilise le studio directement.
+
+- Premier lancement : téléchargement des voix (~198 Mo), ensuite gardées en cache dans le navigateur.
+- Encodeur de texte et estimateur quantifiés en int8 (écart mesuré inférieur à la variation naturelle
+  du modèle entre deux générations) ; vocodeur en float32.
+- Export : WAV et MP3 (dans un `.zip`, seuls formats acceptés par le téléchargement de la page) et
+  M4A/AAC en `.mp4` quand le navigateur sait encoder l'AAC.
+- Projets sauvegardés dans le navigateur.
+- Reconstruire les fichiers du modèle : `python3 scripts/build_web_models.py <dossier supertonic-3> <ort-wasm-simd-threaded.wasm> <sortie>`.
+
+---
+
 ## Licences
 
 - Code de l'application : utilisation libre pour le propriétaire du dépôt.
