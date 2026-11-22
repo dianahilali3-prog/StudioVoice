@@ -241,30 +241,35 @@ y compris l'inférence réelle, à chaque push.
 
 ---
 
-## Studio en ligne aux voix naturelles (sans carte bancaire)
+## Studio en ligne : voix naturelles open source, sans compte ni carte
 
-`docs/index.html` est le studio principal en ligne, publié avec **GitHub Pages** :
-**https://dianahilali3-prog.github.io/StudioVoice/**
+`docs/index.html` est le studio principal. Lien direct (sans réglage) :
+`https://rawcdn.githack.com/dianahilali3-prog/StudioVoice/<commit>/docs/index.html`
+(ou https://dianahilali3-prog.github.io/StudioVoice/ si GitHub Pages est activé sur `/docs`).
 
-- Connexion avec un compte **Puter** gratuit (adresse e-mail, aucune carte bancaire, aucune clé API).
-  Chaque compte reçoit un crédit gratuit mensuel ; l'app ajoute un quota quotidien réglable
-  (10 000 caractères par défaut) pour le répartir sur le mois.
-- **68 voix** : OpenAI gpt-4o-mini-tts (13), Google Gemini TTS (30), ElevenLabs multilingual v2 (14),
-  xAI Grok (5) et Amazon Polly (Léa, Rémi, Gabrielle, Liam, Hala, Zayd). Toutes lisent le français et
-  l'arabe, sauf Polly (une langue par voix, voix associée automatique pour l'autre langue).
-- Styles de lecture (narration, conversation, storytelling, publicité, journal, calme, motivation ou
-  consigne personnalisée) et accents (France, Québec, Belgique, arabe standard, marocain, égyptien,
-  levantin, Golfe), transmis aux voix OpenAI et Gemini.
-- Génération rapide : requêtes de 1 200 caractères envoyées 4 par 4 en parallèle.
-- Vitesse et hauteur réglables, téléchargement direct en MP3, WAV et M4A, projets sauvegardés.
-- **Voix de l'iPhone sans aucun compte** : les voix françaises et arabes installées sur l'appareil
-  (Premium / Améliorée de préférence) lisent le script en illimité, à l'écoute uniquement (le navigateur
-  ne permet pas d'enregistrer ces voix en fichier). Le studio s'ouvre directement sur ces voix ; la
-  connexion Puter n'est demandée qu'en choisissant une voix Puter.
+### Voix naturelles : Chatterbox Multilingual (open source, MIT)
 
-**Activer le site (une fois)** : GitHub › dépôt StudioVoice › *Settings* › *Pages* ›
-*Build and deployment* › Source *Deploy from a branch* › branche `claude/diana-voice-studio-ios-4v4ay9`,
-dossier `/docs` › *Save*. Le lien est actif une à deux minutes plus tard.
+- Modèle **Chatterbox Multilingual** de Resemble AI (licence MIT), 23 langues dont le français et l'arabe,
+  clonage de voix à partir de quelques secondes d'audio.
+- **Catalogue** : 44 voix de référence anonymes (bibliothèque publique de Resemble AI, sans voix de
+  célébrités) sont testées automatiquement en français et en arabe par le workflow
+  `.github/workflows/voix-catalogue.yml` (Whisper vérifie la prononciation). Seules les voix qui
+  prononcent correctement sont gardées, avec leurs extraits d'écoute (`docs/voices/`).
+- **Génération gratuite et illimitée sur GitHub Actions** (dépôt public : aucun coût, aucune carte) :
+  le studio prépare un fichier `demandes/*.txt` ; dès qu'il est enregistré (« Commit changes »), le
+  workflow `.github/workflows/voix-off.yml` découpe le script, le génère en parallèle sur jusqu'à
+  20 machines, assemble (pauses, fondus, volume, vitesse, hauteur) et publie un **MP3 + WAV** dans
+  les *Releases* du dépôt. Le studio affiche ces voix off dès qu'elles sont prêtes.
+- Passages dans l'autre langue : si une voix prononce mal l'arabe (ou le français), une voix native
+  du même genre prend le relais automatiquement.
+- Voix personnelle : dépose un enregistrement de **ta propre voix** (10 s, ou d'une personne qui a
+  donné son accord) dans le dépôt et indique `voix: fichier:chemin/vers/ma-voix.wav` dans la demande.
+- En local : `pip install -r voixoff/requirements.txt` puis `python voixoff/generate.py plan|synth|merge`.
+
+### Voix de l'iPhone (sans aucun compte)
+
+Les voix françaises et arabes installées sur l'appareil (Premium / Améliorée de préférence) lisent le
+script immédiatement et sans limite, à l'écoute uniquement.
 
 ---
 

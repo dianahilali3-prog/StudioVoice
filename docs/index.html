@@ -333,7 +333,7 @@ footer { color: var(--muted); font-size: 12px; text-align: center; display: grid
   </section>
 
   <footer>
-    <span>Voix : OpenAI, Google Gemini, ElevenLabs, xAI et Amazon Polly, via ton compte Puter gratuit. Ton script est envoyé au service de la voix choisie pour être lu.</span>
+    <span>Voix naturelles : Chatterbox Multilingual de Resemble AI (open source, licence MIT), générées gratuitement sur GitHub Actions. Voix iPhone : synthèse vocale de ton appareil.</span>
     <span>DianaVoiceStudio · gratuit, sans abonnement, sans carte bancaire.</span>
   </footer>
 </div>
@@ -971,7 +971,7 @@ let generating = false;
 const CONCURRENCY = 4;
 function clearAudio() {
   const a = $("audio"); a.pause(); if (audio && audio.url) URL.revokeObjectURL(audio.url); a.removeAttribute("src");
-  audio = null; $("playerCard").hidden = true; $("genLabel").textContent = isDevice(voiceById(project.voice)) ? "Écouter le script" : "Générer";
+  audio = null; $("playerCard").hidden = true; $("genLabel").textContent = isDevice(voiceById(project.voice)) ? "Écouter le script" : "Générer gratuitement (GitHub)";
 }
 function speakDevice(text, v, s) {
   return new Promise(res => {
