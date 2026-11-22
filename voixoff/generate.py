@@ -177,6 +177,16 @@ def reference_audio(voice, cache_dir):
     return str(ref)
 
 
+def companion_for(voice, lang):
+    """Voix qui lira un passage dans `lang` : la voix choisie si elle prononce bien cette langue
+    (d'après le test du catalogue), sinon une voix native du même genre."""
+    if voice.get(lang, True) or voice.get("file"):
+        return voice
+    natives = [v for v in VOICES if v.get("origin") == lang and v.get(lang, True)]
+    same = [v for v in natives if v.get("gender") == voice.get("gender")]
+    return (same or natives or [voice])[0]
+
+
 def cmd_synth(args):
     import numpy as np
     import soundfile as sf
@@ -193,9 +203,13 @@ def cmd_synth(args):
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model = ChatterboxMultilingualTTS.from_pretrained(device=device)
     voice = plan["voice"]
-    ref = reference_audio(voice, Path(args.cache))
+    refs = {}
     for c in mine:
-        same = voice.get("origin") == c["lang"]
+        v = companion_for(voice, c["lang"])
+        if v["id"] not in refs:
+            refs[v["id"]] = reference_audio(v, Path(args.cache))
+        ref = refs[v["id"]]
+        same = v.get("origin") == c["lang"]
         cfg = 0.5 if same else 0.0  # 0 = pas d'accent de la langue d'origine
         torch.manual_seed(1234 + c["index"])
         wav = model.generate(c["text"], language_id=c["lang"], audio_prompt_path=ref,

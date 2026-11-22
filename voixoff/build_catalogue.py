@@ -25,5 +25,5 @@ for f in sorted(src.rglob("*.json")):
                  "reco": r["fr"]["score"] >= 0.97 and r["ar"]["score"] >= 0.9, "desc": desc, "preview": preview})
 keep.sort(key=lambda v: (-v["reco"], -v["score"]))
 (dst / "voices.json").write_text(json.dumps(keep, ensure_ascii=False, indent=1), encoding="utf-8")
-Path("voixoff/voices.json").write_text(json.dumps([{k: v[k] for k in ("id", "name", "gender", "origin", "url")} for v in keep], ensure_ascii=False, indent=1), encoding="utf-8")
+Path("voixoff/voices.json").write_text(json.dumps([{k: v[k] for k in ("id", "name", "gender", "origin", "url", "fr", "ar")} for v in keep], ensure_ascii=False, indent=1), encoding="utf-8")
 print(f"{len(keep)} voix gardées")
