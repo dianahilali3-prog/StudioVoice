@@ -126,8 +126,8 @@ jobs:
           REQ: ${{ needs.plan.outputs.request }}
         run: |
           TAG="voix-$(date -u +%Y%m%d-%H%M%S)-${GITHUB_RUN_ID}"
-          TITLE=$(python -c 'import json;i=json.load(open("sortie/info.json"));print((i["title"] or "Voix off")[:80])')
-          NOTES=$(python -c 'import json;i=json.load(open("sortie/info.json"));m,s=divmod(int(i["duration"]),60);print(f"Voix : {i[\"voice\"]} · durée {m}:{s:02d} · {i[\"characters\"]} caractères")')
+          TITLE=$(cat sortie/title.txt)
+          NOTES=$(cat sortie/notes.txt)
           gh release create "$TAG" sortie/*.mp3 sortie/*.wav sortie/info.json \
             --target "$GITHUB_SHA" --title "🎙️ $TITLE" --notes "$NOTES (demande : $REQ)" --prerelease
           echo "### 🎙️ Voix off prête" >> "$GITHUB_STEP_SUMMARY"

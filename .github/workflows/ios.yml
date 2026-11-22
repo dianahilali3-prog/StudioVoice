@@ -2,6 +2,14 @@ name: iOS build & tests
 
 on:
   push:
+    paths:
+      - "DianaVoiceStudio/**"
+      - "DianaVoiceStudioTests/**"
+      - "DianaVoiceStudio.xcodeproj/**"
+      - "Vendor/**"
+      - "Config/**"
+      - "scripts/setup.sh"
+      - ".github/workflows/ios.yml"
   pull_request:
   workflow_dispatch:
 

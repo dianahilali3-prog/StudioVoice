@@ -251,6 +251,9 @@ def cmd_merge(args):
     info = {"title": plan.get("title"), "voice": plan["voice"]["name"], "duration": round(duration, 1),
             "characters": plan["characters"], "files": [base.name + ".mp3", base.name + ".wav"]}
     (out / "info.json").write_text(json.dumps(info, ensure_ascii=False), encoding="utf-8")
+    m, sec = divmod(int(round(duration)), 60)
+    (out / "title.txt").write_text((plan.get("title") or "Voix off")[:80], encoding="utf-8")
+    (out / "notes.txt").write_text(f"Voix : {info['voice']} · durée {m}:{sec:02d} · {info['characters']} caractères", encoding="utf-8")
     print(json.dumps(info, ensure_ascii=False))
 
 
